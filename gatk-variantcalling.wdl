@@ -18,7 +18,7 @@ workflow Gvcf {
         File dbsnpVCFIndex
 
         File? regions
-        Int scatterSize = 10000000
+        Int scatterSize = 1000000000
         Map[String, String] dockerImages = {
           "samtools":"quay.io/biocontainers/samtools:1.8--h46bd0b3_5",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
