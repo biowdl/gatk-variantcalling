@@ -9,6 +9,5 @@
   "GatkVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
   "GatkVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
   "GatkVariantCalling.scatterSize": 10000,
-  "GatkVariantCalling.gvcfName": "test.g.vcf.gz",
   "GatkVariantCalling.mergeGvcfFiles": true
 }
