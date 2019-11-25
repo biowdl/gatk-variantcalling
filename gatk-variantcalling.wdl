@@ -11,6 +11,8 @@ workflow Gvcf {
         Array[IndexedBamFile] bamFiles
         String outputDir = "."
         String gvcfName = "gvcf.g.vcf.gz"
+        String vcfBasename = "multisample"
+        Boolean mergeGvcfFiles = true
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -69,25 +71,44 @@ workflow Gvcf {
                 dockerImage = dockerImages["gatk4"]
         }
 
+        call gatk.GenotypeGVCFs as genotypeGvcfs {
+            input:
+                gvcfFiles = [haplotypeCallerGvcf.outputGVCF],
+                gvcfFilesIndex = [haplotypeCallerGvcf.outputGVCFIndex],
+                intervals = [bed],
+                referenceFasta = referenceFasta,
+                referenceFastaDict = referenceFastaDict,
+                referenceFastaFai = referenceFastaFai,
+                outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
+                dbsnpVCF = dbsnpVCF.file,
+                dbsnpVCFIndex = dbsnpVCF.index,
+                dockerImage = dockerImages["gatk4"]
+        }
+
     }
 
-    call picard.GatherVcfs as gatherGvcfs {
+    call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVcfs = haplotypeCallerGvcf.outputGVCF,
-            inputVcfIndexes = haplotypeCallerGvcf.outputGVCFIndex,
-            outputVcfPath = outputDir + "/"+ gvcfName,
+            inputVCFs = genotypeGvcfs.outputVCF,
+            inputVCFsIndexes = genotypeGvcfs.outputVCFIndex,
+            outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }
 
-    call samtools.Tabix as indexGatheredGvcfs {
-        input:
-            inputFile = gatherGvcfs.outputVcf,
-            outputFilePath = outputDir + "/"+ gvcfName,
-            dockerImage = dockerImages["tabix"]
-    }
+    if (mergeGvcfFiles) {
+        call picard.MergeVCFs as gatherGvcfs {
+            input:
+                inputVCFs = haplotypeCallerGvcf.outputVcf,
+                inputVCFsIndexes = haplotypeCallerGvcf.outputVcfIndex,
+                outputVcfPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
+                dockerImage = dockerImages["picard"]
 
+        }
+    }
     output {
-        File outputGVcf = indexGatheredGvcfs.indexedFile
-        File outputGVcfIndex = indexGatheredGvcfs.index
+        File outputVcf = gatherVcfs.outputVcf
+        File outputVcfIndex = gatherVcfs.outputVcfIndex
+        File outputGVcf = gatherGvcfs.outputVcf
+        File outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
 }
