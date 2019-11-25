@@ -45,7 +45,7 @@
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
 
-- name: single_sample_gvcf
+- name: single_sample
   tags:
     - integration
   command: >-
@@ -56,9 +56,9 @@
       - "WorkflowSucceededState"
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
-      exists: false
+      should_exist: false
     - path: test-output/multisample.g.vcf.gz
-      exists: false
+      should_exist: false
     - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
