@@ -1,16 +1,16 @@
-- name: single_end
+- name: single_sample_gvcf
   tags:
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_end.json gvcf.wdl
+    -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
   files:
-    - path: test-output/test.g.vcf.gz.tbi
-    - path: test-output/test.g.vcf.gz
-      contains:
+    - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/multisample.g.vcf.gz
+      contains: &vcf-contents
         - "chr1	500	.	C	T"
         - "chr1	1000	.	A	G"
         - "chr1	1500	.	G	A"
@@ -41,3 +41,24 @@
         - "chr1	14000	.	A	C"
         - "chr1	14500	.	A	G"
         - "chr1	15000	.	T	G"
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
+
+- name: single_sample_gvcf
+  tags:
+    - integration
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/single_sample.json gatk-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+      exists: false
+    - path: test-output/multisample.g.vcf.gz
+      exists: false
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
