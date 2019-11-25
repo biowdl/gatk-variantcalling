@@ -6,7 +6,7 @@ import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "tasks/samtools.wdl" as samtools
 
-workflow Gvcf {
+workflow GatkVariantCalling {
     input {
         Array[IndexedBamFile] bamFiles
         String outputDir = "."
@@ -80,8 +80,8 @@ workflow Gvcf {
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
                 outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
-                dbsnpVCF = dbsnpVCF.file,
-                dbsnpVCFIndex = dbsnpVCF.index,
+                dbsnpVCF = dbsnpVCF,
+                dbsnpVCFIndex = dbsnpVCFIndex,
                 dockerImage = dockerImages["gatk4"]
         }
 
@@ -98,8 +98,8 @@ workflow Gvcf {
     if (mergeGvcfFiles) {
         call picard.MergeVCFs as gatherGvcfs {
             input:
-                inputVCFs = haplotypeCallerGvcf.outputVcf,
-                inputVCFsIndexes = haplotypeCallerGvcf.outputVcfIndex,
+                inputVCFs = haplotypeCallerGvcf.outputGVCF,
+                inputVCFsIndexes = haplotypeCallerGvcf.outputGVCFIndex,
                 outputVcfPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
                 dockerImage = dockerImages["picard"]
 
@@ -108,7 +108,7 @@ workflow Gvcf {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
-        File outputGVcf = gatherGvcfs.outputVcf
-        File outputGVcfIndex = gatherGvcfs.outputVcfIndex
+        File? outputGVcf = gatherGvcfs.outputVcf
+        File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
 }
