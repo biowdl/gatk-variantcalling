@@ -10,7 +10,7 @@
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
-      contains: &vcf-contents
+      contains: &vcf-contents  # We use a YAML anchor here. This saves a lot of typing later.
         - "chr1	500	.	C	T"
         - "chr1	1000	.	A	G"
         - "chr1	1500	.	G	A"
