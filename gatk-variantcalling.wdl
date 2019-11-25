@@ -10,7 +10,6 @@ workflow GatkVariantCalling {
     input {
         Array[IndexedBamFile] bamFiles
         String outputDir = "."
-        String gvcfName = "gvcf.g.vcf.gz"
         String vcfBasename = "multisample"
         Boolean mergeGvcfFiles = true
         File referenceFasta
