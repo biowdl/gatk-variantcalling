@@ -1,17 +1,14 @@
 {
-  "JointGenotyping.scatterSize": 10000,
-  "JointGenotyping.reference": {
-    "fasta": "tests/data/reference.fasta",
-    "fai": "tests/data/reference.fasta.fai",
-    "dict": "tests/data/reference.dict"
-  },
-  "JointGenotyping.dbsnpVCF": {
-    "file": "tests/data/wgs2.vcf.gz",
-    "index": "tests/data/wgs2.vcf.gz.tbi"
-  },
-  "JointGenotyping.gvcfFiles": [
-    {"file": "tests/data/wgs1.g.vcf.gz",
-    "index": "tests/data/wgs1.g.vcf.gz.tbi"}
+  "GatkVariantCalling.bamFiles": [
+    {"file": "tests/data/wgs2.realign.bam",
+    "index":  "tests/data/wgs2.realign.bai"}
   ],
-  "JointGenotyping.mergeGvcfFiles": true
+  "GatkVariantCalling.referenceFasta": "tests/data/reference.fasta",
+  "GatkVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
+  "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",
+  "GatkVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
+  "GatkVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
+  "GatkVariantCalling.scatterSize": 10000,
+  "GatkVariantCalling.gvcfName": "test.g.vcf.gz",
+  "GatkVariantCalling.mergeGvcfFiles": true
 }
