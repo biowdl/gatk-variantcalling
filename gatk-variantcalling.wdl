@@ -18,6 +18,8 @@ workflow Gvcf {
         File dbsnpVCFIndex
 
         File? regions
+        # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
+        # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
         Map[String, String] dockerImages = {
           "samtools":"quay.io/biocontainers/samtools:1.8--h46bd0b3_5",
