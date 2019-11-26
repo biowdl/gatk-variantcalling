@@ -127,8 +127,6 @@ workflow GatkVariantCalling {
     }
 
     output {
-        Array[File] sampleGvcfFiles = flatten(Gvcf.outputGvcfs)
-        Array[File] sampleGvcfFilesIndex = flatten(Gvcf.outputGvcfsIndex)
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
         File? outputGVcf = gatherGvcfs.outputVcf

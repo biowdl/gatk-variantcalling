@@ -9,7 +9,6 @@
       - "WorkflowSucceededState"
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
-    - path: test-output/samples/wgs2.realign
     - path: test-output/multisample.g.vcf.gz
       contains: &vcf-contents  # We use a YAML anchor here. This saves a lot of typing later.
         - "chr1	500	.	C	T"
@@ -56,8 +55,6 @@
     contains:
       - "WorkflowSucceededState"
   files:
-    - path: test-output/samples/wgs3
-    - path: test-output/samples/wgs2.realign
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
       contains: *vcf-contents
