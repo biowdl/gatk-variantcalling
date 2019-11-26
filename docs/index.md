@@ -39,7 +39,6 @@ Some additional inputs which may be of interest are:
 {
   "GatkVariantCalling.scatterList.regions": "The path to a bed file containing the regions for which variant calling will be performed",
   "GatkVariantCalling.scatterSize": "The size of scatter regions (see explanation of scattering below), defaults to 10,000,000",
-  "GatkVariantCalling.mergeGvcfFiles": "Whether or not to output a merged GVCF file, defaults to true",
   "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'"
 }
 
