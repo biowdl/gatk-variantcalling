@@ -1,4 +1,4 @@
-- name: single_sample_gvcf
+- name: single_sample
   tags:
     - integration
   command: >-
@@ -45,7 +45,7 @@
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
 
-- name: two_sample_gvcf
+- name: two_sample
   tags:
     - integration
   command: >-
