@@ -69,6 +69,9 @@ workflow GatkVariantCalling {
     }
 
     scatter (bam in bamFiles) {
+        # Call separate pipeline to allow scatter in scatter.
+        # Also this is needed. If there are 50 bam files, we need more scattering than
+        # when we have 1 bam file.
         call gvcf.Gvcf as Gvcf {
             input:
                 bam=bam.file,
