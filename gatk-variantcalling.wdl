@@ -131,4 +131,24 @@ workflow GatkVariantCalling {
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
+
+    parameter_meta {
+        bamFiles: { description: "BAM files to be analysed by GATK. The should be recalibrated beforehand if required.",
+                    category: "required" }
+        vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
+                       category: "common"}
+        referenceFasta: { description: "The reference fasta file", category: "required" }
+        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
+
+
+        String vcfBasename = "multisample"
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File dbsnpVCF
+        File dbsnpVCFIndex
+        String outputDir = "."
+
+    }
 }
