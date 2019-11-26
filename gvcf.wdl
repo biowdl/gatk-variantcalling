@@ -58,4 +58,17 @@ workflow Gvcf {
         Array[File] outputGvcfs = haplotypeCallerGvcf.outputGVCF
         Array[File] outputGvcfsIndex = haplotypeCallerGvcf.outputGVCFIndex
     }
+
+    parameter_meta {
+        bam: { description: "Bam file to be genotyped", category: "required" }
+        bamIndex: { description: "Index (.bai) file of the bam file", category: "required" }
+        scatterList: {description: "A list of bed files to define the scatter regions", category:"required" }
+        referenceFasta: { description: "The reference fasta file", category: "required" }
+        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
+        dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "required"}
+        dbsnpVCFIndex: { description: "index (.tbi) file for the dbsnp VCF", category: "required"}
+        outputDir: { description: "The directory where the output files should be located", category: "common" }
+        dockerImages: { description: "A map with docker images to use", category: "required" }
+    }
 }

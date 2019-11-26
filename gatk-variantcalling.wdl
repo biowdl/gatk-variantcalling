@@ -140,15 +140,10 @@ workflow GatkVariantCalling {
         referenceFasta: { description: "The reference fasta file", category: "required" }
         referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
         referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
-
-
-        String vcfBasename = "multisample"
-        File referenceFasta
-        File referenceFastaDict
-        File referenceFastaFai
-        File dbsnpVCF
-        File dbsnpVCFIndex
-        String outputDir = "."
-
+        dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "required"}
+        dbsnpVCFIndex: { description: "index (.tbi) file for the dbsnp VCF", category: "required"}
+        outputDir: { description: "The directory where the output files should be located", category: "common" }
+        dockerImages: { description: "specify which docker images should be used for running this pipeline",
+                        category: "advanced" }
     }
 }
