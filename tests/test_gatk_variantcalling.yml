@@ -1,0 +1,63 @@
+- name: single_sample
+  tags:
+    - integration
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/multisample.g.vcf.gz
+      contains: &vcf-contents  # We use a YAML anchor here. This saves a lot of typing later.
+        - "chr1	500	.	C	T"
+        - "chr1	1000	.	A	G"
+        - "chr1	1500	.	G	A"
+        - "chr1	2000	.	G	A"
+        - "chr1	2500	.	A	G"
+        - "chr1	3000	.	G	C"
+        - "chr1	3500	.	G	T"
+        - "chr1	4000	.	A	G"
+        - "chr1	4500	.	A	C"
+        - "chr1	5000	.	A	G"
+        - "chr1	5500	.	C	T"
+        - "chr1	6000	.	C	A"
+        - "chr1	6500	.	C	T"
+        - "chr1	7000	.	G	T"
+        - "chr1	7500	.	G	C"
+        - "chr1	8000	.	T	G"
+        - "chr1	8500	.	T	A"
+        - "chr1	9000	.	C	T"
+        - "chr1	9500	.	G	A"
+        - "chr1	10000	.	A	G"
+        - "chr1	10500	.	T	C"
+        - "chr1	11000	.	A	G"
+        - "chr1	11500	.	C	T"
+        - "chr1	12000	.	A	G"
+        - "chr1	12500	.	C	G"
+        - "chr1	13000	.	T	C"
+        - "chr1	13500	.	G	T"
+        - "chr1	14000	.	A	C"
+        - "chr1	14500	.	A	G"
+        - "chr1	15000	.	T	G"
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
+
+- name: two_sample
+  tags:
+    - integration
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/multisample.g.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
