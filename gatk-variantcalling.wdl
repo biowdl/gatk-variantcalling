@@ -95,12 +95,15 @@ workflow GatkVariantCalling {
     }
 
     if (mergeGvcfFiles) {
-        call picard.MergeVCFs as gatherGvcfs {
+        call gatk.CombineGVCFs as gatherGvcfs {
             input:
-                inputVCFs = haplotypeCallerGvcf.outputGVCF,
-                inputVCFsIndexes = haplotypeCallerGvcf.outputGVCFIndex,
-                outputVcfPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
-                dockerImage = dockerImages["picard"]
+                gvcfFiles = haplotypeCallerGvcf.outputGVCF,
+                gvcfFilesIndex = haplotypeCallerGvcf.outputGVCFIndex,
+                outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
+                referenceFasta = referenceFasta,
+                referenceFastaFai = referenceFastaFai,
+                referenceFastaDict = referenceFastaDict,
+                dockerImage = dockerImages["gatk4"]
 
         }
     }
