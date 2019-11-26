@@ -72,16 +72,16 @@ workflow GatkVariantCalling {
         # when we have 1 bam file.
         call gvcf.Gvcf as Gvcf {
             input:
-                bam=bam.file,
-                bamIndex=bam.index,
-                scatterList=orderedScatters.reorderedScatters,
-                referenceFasta=referenceFasta,
-                referenceFastaDict=referenceFastaDict,
-                referenceFastaFai=referenceFastaFai,
-                dbsnpVCF=dbsnpVCF,
-                dbsnpVCFIndex=dbsnpVCFIndex,
-                outputDir=outputDir + "/samples/" + basename(bam.file, ".bam"),
-                dockerImages=dockerImages
+                bam = bam.file,
+                bamIndex = bam.index,
+                scatterList = orderedScatters.reorderedScatters,
+                referenceFasta = referenceFasta,
+                referenceFastaDict = referenceFastaDict,
+                referenceFastaFai = referenceFastaFai,
+                dbsnpVCF = dbsnpVCF,
+                dbsnpVCFIndex = dbsnpVCFIndex,
+                outputDir = outputDir + "/samples/" + basename(bam.file, ".bam"),
+                dockerImages = dockerImages
         }
     }
 
