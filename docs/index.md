@@ -99,7 +99,7 @@ biowdl pipelines. The list of default images for this pipeline can be
 found in the default for the `dockerImages` input.
 
 ### output
-A GVCF file at the specified location and its index.
+A multisample vcf file and a multisample gvcf file.
 
 ## Scattering
 This pipeline performs scattering to speed up analysis on grid computing
