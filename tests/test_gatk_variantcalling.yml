@@ -9,6 +9,7 @@
       - "WorkflowSucceededState"
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/samples/wgs2.realign
     - path: test-output/multisample.g.vcf.gz
       contains: &vcf-contents  # We use a YAML anchor here. This saves a lot of typing later.
         - "chr1	500	.	C	T"
@@ -45,34 +46,18 @@
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
 
-- name: single_sample
-  tags:
-    - integration
-  command: >-
-    cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_sample.json gatk-variantcalling.wdl
-  stdout:
-    contains:
-      - "WorkflowSucceededState"
-  files:
-    - path: test-output/multisample.g.vcf.gz.tbi
-      should_exist: false
-    - path: test-output/multisample.g.vcf.gz
-      should_exist: false
-    - path: test-output/multisample.vcf.gz
-      contains: *vcf-contents
-    - path: test-output/multisample.vcf.gz.tbi
-
 - name: two_sample_gvcf
   tags:
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_sample.json gatk-variantcalling.wdl
+    -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
   files:
+    - path: test-output/samples/wgs3
+    - path: test-output/samples/wgs2.realign
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
       contains: *vcf-contents
