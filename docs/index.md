@@ -107,6 +107,13 @@ clusters. This is done by splitting the reference genome into regions of
 roughly equal size (see the `scatterSize` input). Each of these regions will be
 analyzed in separate jobs, allowing them to be processed in parallel.
 
+For each BAM file input in the pipeline these scatters will be used. For 
+example, with 5 BAM files and 4 scatters, 20 jobs will run to genotype the BAM
+files.
+The resulting GVCF files will be merged. Then GatkGenotypeGVCF will be 
+scattered over the 4 scatters to create a VCF per scatters.
+The output is merged into a multisample vcf.
+
 ## Contact
 <p>
   <!-- Obscure e-mail address for spammers -->
