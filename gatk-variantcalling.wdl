@@ -61,7 +61,7 @@ workflow GatkVariantCalling {
     # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
     call biopet.ReorderGlobbedScatters as orderedScatters {
         input:
-            scatters = scatterList.scatters,
+            scatters = scatterList.scatters
             # Dockertag not relevant here. Python script always runs in the same
             # python container.
     }
