@@ -43,11 +43,9 @@ workflow GatkVariantCalling {
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
         Map[String, String] dockerImages = {
-          "samtools":"quay.io/biocontainers/samtools:1.8--h46bd0b3_5",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
           "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
-          "tabix": "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
         }
     }
 
@@ -82,7 +80,8 @@ workflow GatkVariantCalling {
                 referenceFastaFai=referenceFastaFai,
                 dbsnpVCF=dbsnpVCF,
                 dbsnpVCFIndex=dbsnpVCFIndex,
-                outputDir=outputDir + "/samples/" + basename(bam.file, ".bam")
+                outputDir=outputDir + "/samples/" + basename(bam.file, ".bam"),
+                dockerImages=dockerImages
         }
     }
 
