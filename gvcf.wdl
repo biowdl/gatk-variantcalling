@@ -50,7 +50,7 @@ workflow Gvcf {
     scatter (bed in scatterList) {
         call gatk.HaplotypeCallerGvcf as haplotypeCallerGvcf {
             input:
-                gvcfPath = scatterDir + "/" + basename(bed) + ".vcf.gz",
+                gvcfPath = scatterDir + "/" + basename(bed) + ".g.vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
