@@ -62,3 +62,20 @@
     - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
+
+- name: two_sample_gvcf
+  tags:
+    - integration
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/single_sample.json gatk-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/multisample.g.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
