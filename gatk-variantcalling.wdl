@@ -1,17 +1,37 @@
 version 1.0
 
+# Copyright (c) 2018 Leiden University Medical Center
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/common.wdl" as common
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "tasks/samtools.wdl" as samtools
+import "gvcf.wdl" as gvcf
 
 workflow GatkVariantCalling {
     input {
         Array[IndexedBamFile] bamFiles
         String outputDir = "."
         String vcfBasename = "multisample"
-        Boolean mergeGvcfFiles = true
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -48,32 +68,41 @@ workflow GatkVariantCalling {
             # python container.
     }
 
-    scatter (f in bamFiles) {
-        File files = f.file
-        File indexes = f.index
+    scatter (bam in bamFiles) {
+        call gvcf.Gvcf as Gvcf {
+            input:
+                bam=bam.file,
+                bamIndex=bam.index,
+                scatterList=orderedScatters.reorderedScatters,
+                referenceFasta=referenceFasta,
+                referenceFastaDict=referenceFastaDict,
+                referenceFastaFai=referenceFastaFai,
+                dbsnpVCF=dbsnpVCF,
+                dbsnpVCFIndex=dbsnpVCFIndex,
+                outputDir=outputDir + "/samples/" + basename(bam.file, ".bam")
+        }
+    }
+
+    call gatk.CombineGVCFs as gatherGvcfs {
+            input:
+                gvcfFiles = flatten(Gvcf.outputGvcfs),
+                gvcfFilesIndex = flatten(Gvcf.outputGvcfsIndex),
+                outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
+                referenceFasta = referenceFasta,
+                referenceFastaFai = referenceFastaFai,
+                referenceFastaDict = referenceFastaDict,
+                dockerImage = dockerImages["gatk4"]
+
     }
 
     String scatterDir = outputDir + "/scatters/"
 
     scatter (bed in orderedScatters.reorderedScatters) {
-        call gatk.HaplotypeCallerGvcf as haplotypeCallerGvcf {
-            input:
-                gvcfPath = scatterDir + "/" + basename(bed) + ".vcf.gz",
-                intervalList = [bed],
-                referenceFasta = referenceFasta,
-                referenceFastaIndex = referenceFastaFai,
-                referenceFastaDict = referenceFastaDict,
-                inputBams = files,
-                inputBamsIndex = indexes,
-                dbsnpVCF = dbsnpVCF,
-                dbsnpVCFIndex = dbsnpVCFIndex,
-                dockerImage = dockerImages["gatk4"]
-        }
 
         call gatk.GenotypeGVCFs as genotypeGvcfs {
             input:
-                gvcfFiles = [haplotypeCallerGvcf.outputGVCF],
-                gvcfFilesIndex = [haplotypeCallerGvcf.outputGVCFIndex],
+                gvcfFiles = [gatherGvcfs.outputVcf],
+                gvcfFilesIndex = [gatherGvcfs.outputVcfIndex],
                 intervals = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
@@ -94,19 +123,6 @@ workflow GatkVariantCalling {
             dockerImage = dockerImages["picard"]
     }
 
-    if (mergeGvcfFiles) {
-        call gatk.CombineGVCFs as gatherGvcfs {
-            input:
-                gvcfFiles = haplotypeCallerGvcf.outputGVCF,
-                gvcfFilesIndex = haplotypeCallerGvcf.outputGVCFIndex,
-                outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
-                referenceFasta = referenceFasta,
-                referenceFastaFai = referenceFastaFai,
-                referenceFastaDict = referenceFastaDict,
-                dockerImage = dockerImages["gatk4"]
-
-        }
-    }
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
