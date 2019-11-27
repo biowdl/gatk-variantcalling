@@ -41,8 +41,7 @@ pipeline {
         stage('lint') {
             when { environment name: 'LINT', value: 'true' }
             steps {
-                sh 'bash -c "export PATH=$PATH:$CROMWELL_PATH"'
-                sh 'bash scripts/biowdl_lint.sh'
+                sh 'bash -c "PATH=$PATH:$CROMWELL_PATH bash scripts/biowdl_lint.sh"'
             }
         }
 
