@@ -11,6 +11,7 @@ pipeline {
         string name: 'OUTPUT_DIR', defaultValue: '${DEFAULT}'
         string name: 'TAGS', defaultValue: '${DEFAULT}'
         string name: 'LINT', defaultValue: '${DEFAULT}'
+        string name: 'CROMWELL_PATH', defaultValue: '${DEFAULT}'
     }
     stages {
         stage('Init') {
@@ -40,6 +41,7 @@ pipeline {
         stage('lint') {
             when { environment name: 'LINT', value: 'true' }
             steps {
+                sh 'bash -c "export PATH=$PATH:$CROMWELL_PATH"'
                 sh 'bash scripts/biowdl_lint.sh'
             }
         }
