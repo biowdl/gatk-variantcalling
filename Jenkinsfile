@@ -10,6 +10,7 @@ pipeline {
         string name: 'THREADS', defaultValue: '${DEFAULT}'
         string name: 'OUTPUT_DIR', defaultValue: '${DEFAULT}'
         string name: 'TAGS', defaultValue: '${DEFAULT}'
+        string name: 'LINT', defaultValue: '${DEFAULT}'
     }
     stages {
         stage('Init') {
@@ -37,6 +38,7 @@ pipeline {
         }
 
         stage('lint') {
+            when { environment name: 'LINT', value: 'true' }
             steps {
                 sh 'bash scripts/biowdl_lint.sh'
             }
