@@ -6,7 +6,6 @@ pipeline {
     }
     parameters {
         string name: 'PYTHON', defaultValue: '${DEFAULT}'
-        string name: 'CROMWELL_BIN', defaultValue: '${DEFAULT}'
         string name: 'THREADS', defaultValue: '${DEFAULT}'
         string name: 'OUTPUT_DIR', defaultValue: '${DEFAULT}'
         string name: 'TAGS', defaultValue: '${DEFAULT}'
@@ -59,7 +58,7 @@ pipeline {
             steps {
                 sh "#!/bin/bash\n" +
                         "set -e -v  -o pipefail\n" +
-                        "export PATH=$PATH:$CROMWELL_BIN\n" +
+                        "export PATH=$PATH:$CROMWELL_PATH\n" +
                         "${PYTHON} -m pytest -v --keep-workflow-wd --workflow-threads ${THREADS} --basetemp ${outputDir} ${TAGS} tests/"
             }
         }
