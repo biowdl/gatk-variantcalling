@@ -36,6 +36,12 @@ pipeline {
             }
         }
 
+        stage('lint') {
+            steps {
+                sh 'bash scripts/biowdl_lint.sh'
+            }
+        }
+
         stage('Submodules develop') {
             when {
                 branch 'develop'
