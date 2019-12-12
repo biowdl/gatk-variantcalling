@@ -101,6 +101,23 @@ workflow GatkVariantCalling {
                 outputDir = outputDir + "/samples/" + basename(bam.file, ".bam"),
                 dockerImages = dockerImages
         }
+
+        if (gender == "male" || gender =="m") {
+            call gatk.HaplotypeCallerGVCF as callMalePloidy {
+                input:
+                    gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                    intervalList = [XNonParRegions, YNonParRegions],
+                    ploidy = 1,
+                    referenceFasta = referenceFasta,
+                    referenceFastaIndex = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    inputBam = [bam.file],
+                    inputBamsIndex = [bam.index],
+                    dbsnpVCF = dbsnpVCF,
+                    dbsnpVCFIndex = dbsnpVCFIndex,
+                    dockerImage = dockerImages["gatk4"]
+            }
+        }
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {
