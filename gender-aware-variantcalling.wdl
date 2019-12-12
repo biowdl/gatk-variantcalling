@@ -21,15 +21,14 @@ version 1.0
 # SOFTWARE.
 
 import "tasks/biopet/biopet.wdl" as biopet
-import "tasks/common.wdl" as common
+import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "tasks/samtools.wdl" as samtools
 import "gvcf.wdl" as gvcf
 
 workflow GatkVariantCalling {
     input {
-        Array[IndexedBamFile] bamFiles
+        Array[Pair[IndexedBamFile, String]] bamFilesAndGenders
         String outputDir = "."
         String vcfBasename = "multisample"
         File referenceFasta
@@ -37,24 +36,41 @@ workflow GatkVariantCalling {
         File referenceFastaFai
         File dbsnpVCF
         File dbsnpVCFIndex
-
-        File? regions
+        File XNonParRegions
+        File YNonParRegions
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
         Map[String, String] dockerImages = {
+          "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
           "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
         }
     }
 
+    # We define the 'normal' regions by creating a regions file that covers
+    # everything except the XNonParRegions and the YNonParRegions.
+    call bedtools.MergeBedFiles as mergeBeds {
+        input:
+            bedFiles = [XNonParRegions, YNonParRegions],
+            dockerImage = dockerImages["bedtools"]
+    }
+
+    call bedtools.Complement as inverseBed {
+        input:
+            inputBed = mergeBeds.mergedBed,
+            faidx = referenceFastaFai,
+            dockerImage = dockerImages["bedtools"]
+    }
+    File autosomalRegions = inverseBed.complementBed
+
     call biopet.ScatterRegions as scatterList {
         input:
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
-            regions = regions,
+            regions = autosomalRegions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 
@@ -66,7 +82,9 @@ workflow GatkVariantCalling {
             # python container.
     }
 
-    scatter (bam in bamFiles) {
+    scatter (bamGender in bamFilesAndGenders) {
+        IndexedBamFile bam = bamGender.left
+        String gender = bamGender.right
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
