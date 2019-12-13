@@ -97,8 +97,6 @@ workflow GatkVariantCalling {
 
     }
 
-    String scatterDir = outputDir + "/scatters/"
-
     scatter (bed in orderedScatters.reorderedScatters) {
 
         call gatk.GenotypeGVCFs as genotypeGvcfs {
