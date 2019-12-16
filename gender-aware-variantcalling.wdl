@@ -118,12 +118,47 @@ workflow GatkVariantCalling {
                     dockerImage = dockerImages["gatk4"]
             }
         }
+        if (gender == "female" || gender == "f") {
+            call gatk.HaplotypeCallerGVCF as callFemaleX {
+                input:
+                    gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                    intervalList = [XNonParRegions],
+                    ploidy = 2,
+                    referenceFasta = referenceFasta,
+                    referenceFastaIndex = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    inputBam = [bam.file],
+                    inputBamsIndex = [bam.index],
+                    dbsnpVCF = dbsnpVCF,
+                    dbsnpVCFIndex = dbsnpVCFIndex,
+                    dockerImage = dockerImages["gatk4"]
+            }
+
+            # Females don't have Y. Still there are reads that map to it.
+            # Therefore to be able to compare male and female also female Y must be called.
+            call gatk.HaplotypeCallerGVCF as callFemaleY {
+                input:
+                    gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                    intervalList = [YNonParRegions],
+                    ploidy = 1,
+                    referenceFasta = referenceFasta,
+                    referenceFastaIndex = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    inputBam = [bam.file],
+                    inputBamsIndex = [bam.index],
+                    dbsnpVCF = dbsnpVCF,
+                    dbsnpVCFIndex = dbsnpVCFIndex,
+                    dockerImage = dockerImages["gatk4"]
+            }
+        }
+        File GVCFs = flatten([Gvcf.outputGvcfs, select_all([callMalePloidy.outputGVCF, callFemaleX.outputGVCF, callFemaleY.outputGVCF])])
+        File GVCFIndexes = flatten([Gvcf.outputGvcfIndexes, select_all([callMalePloidy.outputGVCFIndex, callFemaleX.outputGVCF, callFemaleY.outputGVCF])])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {
             input:
-                gvcfFiles = flatten(Gvcf.outputGvcfs),
-                gvcfFilesIndex = flatten(Gvcf.outputGvcfsIndex),
+                gvcfFiles = flatten(GVCFs),
+                gvcfFilesIndex = flatten(GVCFIndexes),
                 outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
                 referenceFasta = referenceFasta,
                 referenceFastaFai = referenceFastaFai,
