@@ -102,7 +102,7 @@ workflow GatkVariantCalling {
                 dockerImages = dockerImages
         }
 
-        call gatk.HaplotypeCallerGVCF as callX {
+        call gatk.HaplotypeCallerGvcf as callX {
             input:
                 gvcfPath = scatterDir + "/" + ".g.vcf.gz",
                 intervalList = [XNonParRegions],
@@ -111,7 +111,7 @@ workflow GatkVariantCalling {
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
                 referenceFastaDict = referenceFastaDict,
-                inputBam = [bam.file],
+                inputBams = [bam.file],
                 inputBamsIndex = [bam.index],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
@@ -120,7 +120,7 @@ workflow GatkVariantCalling {
 
         # Females don't have Y. Still there are reads that map to it.
         # Therefore to be able to compare male and female also female Y must be called.
-        call gatk.HaplotypeCallerGVCF as callY {
+        call gatk.HaplotypeCallerGvcf as callY {
             input:
                 gvcfPath = scatterDir + "/" + ".g.vcf.gz",
                 intervalList = [YNonParRegions],
@@ -128,7 +128,7 @@ workflow GatkVariantCalling {
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
                 referenceFastaDict = referenceFastaDict,
-                inputBam = [bam.file],
+                inputBams = [bam.file],
                 inputBamsIndex = [bam.index],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
@@ -136,7 +136,7 @@ workflow GatkVariantCalling {
         }
 
         File GVCFs = flatten([Gvcf.outputGvcfs, callY.outputGVCF, callX.outputGVCF])
-        File GVCFIndexes = flatten([Gvcf.outputGvcfIndexes, callX.outputGVCFIndex, callY.outputGVCFIndex])
+        File GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, callX.outputGVCFIndex, callY.outputGVCFIndex])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {
