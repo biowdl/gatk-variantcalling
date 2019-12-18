@@ -49,6 +49,7 @@ workflow GatkVariantCalling {
         }
     }
 
+    String scatterDir = outputDir + "/scatters/"
     # We define the 'normal' regions by creating a regions file that covers
     # everything except the XNonParRegions and the YNonParRegions.
     call bedtools.MergeBedFiles as mergeBeds {
@@ -65,7 +66,7 @@ workflow GatkVariantCalling {
     }
     File autosomalRegions = inverseBed.complementBed
 
-    call biopet.ScatterRegions as scatterList {
+    call biopet.ScatterRegions as scatterAutosomalRegions {
         input:
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
@@ -75,9 +76,9 @@ workflow GatkVariantCalling {
     }
 
     # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-    call biopet.ReorderGlobbedScatters as orderedScatters {
+    call biopet.ReorderGlobbedScatters as orderedAutosomalScatters {
         input:
-            scatters = scatterList.scatters
+            scatters = scatterAutosomalRegions.scatters
             # Dockertag not relevant here. Python script always runs in the same
             # python container.
     }
@@ -92,7 +93,7 @@ workflow GatkVariantCalling {
             input:
                 bam = bam.file,
                 bamIndex = bam.index,
-                scatterList = orderedScatters.reorderedScatters,
+                scatterList = orderedAutosomalScatters.reorderedScatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
@@ -135,8 +136,8 @@ workflow GatkVariantCalling {
                 dockerImage = dockerImages["gatk4"]
         }
 
-        File GVCFs = flatten([Gvcf.outputGvcfs, callY.outputGVCF, callX.outputGVCF])
-        File GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, callX.outputGVCFIndex, callY.outputGVCFIndex])
+        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, [callY.outputGVCF, callX.outputGVCF]])
+        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, [callX.outputGVCFIndex, callY.outputGVCFIndex]])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {
@@ -151,9 +152,23 @@ workflow GatkVariantCalling {
 
     }
 
-    String scatterDir = outputDir + "/scatters/"
+    call biopet.ScatterRegions as scatterAllRegions {
+        input:
+            referenceFasta = referenceFasta,
+            referenceFastaDict = referenceFastaDict,
+            scatterSize = scatterSize,
+            dockerImage = dockerImages["biopet-scatterregions"]
+    }
 
-    scatter (bed in orderedScatters.reorderedScatters) {
+    # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
+    call biopet.ReorderGlobbedScatters as orderedAllScatters {
+        input:
+            scatters = scatterAllRegions.scatters
+            # Dockertag not relevant here. Python script always runs in the same
+            # python container.
+    }
+
+    scatter (bed in orderedAllScatters.reorderedScatters) {
 
         call gatk.GenotypeGVCFs as genotypeGvcfs {
             input:
