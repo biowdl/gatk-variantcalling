@@ -26,7 +26,7 @@ import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "gvcf.wdl" as gvcf
 
-workflow GatkVariantCalling {
+workflow GenderAwareVariantCalling {
     input {
         Array[Pair[IndexedBamFile, String]] bamFilesAndGenders
         String outputDir = "."
@@ -183,7 +183,6 @@ workflow GatkVariantCalling {
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 dockerImage = dockerImages["gatk4"]
         }
-
     }
 
     call picard.MergeVCFs as gatherVcfs {

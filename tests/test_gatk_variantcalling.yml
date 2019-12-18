@@ -61,3 +61,18 @@
     - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
+
+- name: two_sample_gender_aware
+  tags:
+    - integration
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/two_sample_gender_aware.json gender-aware-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+    - path: test-output/multisample.g.vcf.gz
+    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.vcf.gz.tbi
