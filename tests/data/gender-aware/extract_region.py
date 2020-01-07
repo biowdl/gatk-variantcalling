@@ -18,4 +18,4 @@ if __name__ == "__main__":
     with open(args.filename, mode="rt") as fasta_h:
         record = next(FastaIterator(fasta_h))  # type: SeqRecord
         region_of_interest = record[args.region_start - 1: args.region_end]
-        print(region_of_interest.format("fasta"))
+        print(region_of_interest.format("fasta"), end='')
