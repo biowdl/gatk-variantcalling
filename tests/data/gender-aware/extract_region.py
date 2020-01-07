@@ -17,4 +17,5 @@ if __name__ == "__main__":
     args = argument_parser().parse_args()
     with open(args.filename, mode="rt") as fasta_h:
         record = next(FastaIterator(fasta_h))  # type: SeqRecord
-        print(record[args.region_start - 1: args.region_end].seq)
+        region_of_interest = record[args.region_start - 1: args.region_end]
+        print(region_of_interest.format("fasta"))
