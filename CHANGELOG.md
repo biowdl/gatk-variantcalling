@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 -->
 version 1.1.0-dev
 -----------------
++ Added inputs overview to the docs.
 + Added miniwdl to linting.
 
 version 1.0.0
