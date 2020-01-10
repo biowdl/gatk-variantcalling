@@ -48,7 +48,7 @@ GatkVariantCalling.
 <dt id="GatkVariantCalling.outputDir"><a href="#GatkVariantCalling.outputDir">GatkVariantCalling.outputDir</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"."</code><br />
-    The directory where the output files should be located
+    The directory where the output files should be located.
 </dd>
 <dt id="GatkVariantCalling.regions"><a href="#GatkVariantCalling.regions">GatkVariantCalling.regions</a></dt>
 <dd>
@@ -69,7 +69,7 @@ GatkVariantCalling.
 <dt id="GatkVariantCalling.dockerImages"><a href="#GatkVariantCalling.dockerImages">GatkVariantCalling.dockerImages</a></dt>
 <dd>
     <i>Map[String,String] </i><i>&mdash; Default:</i> <code>{"picard": "quay.io/biocontainers/picard:2.20.5--0", "gatk4": "quay.io/biocontainers/gatk4:4.1.0.0--0", "biopet-scatterregions": "quay.io/biocontainers/biopet-scatterregions:0.2--0"}</code><br />
-    specify which docker images should be used for running this pipeline
+    The docker images should be used for running this pipeline.
 </dd>
 <dt id="GatkVariantCalling.gatherGvcfs.intervals"><a href="#GatkVariantCalling.gatherGvcfs.intervals">GatkVariantCalling.gatherGvcfs.intervals</a></dt>
 <dd>
