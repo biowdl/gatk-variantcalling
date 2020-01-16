@@ -131,17 +131,20 @@ workflow GatkVariantCalling {
     }
 
     parameter_meta {
-        bamFiles: { description: "BAM files to be analysed by GATK. The should be recalibrated beforehand if required.",
-                    category: "required" }
-        vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
-                       category: "common"}
-        referenceFasta: { description: "The reference fasta file", category: "required" }
-        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
-        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
-        dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "required"}
-        dbsnpVCFIndex: { description: "index (.tbi) file for the dbsnp VCF", category: "required"}
-        outputDir: { description: "The directory where the output files should be located", category: "common" }
-        dockerImages: { description: "specify which docker images should be used for running this pipeline",
-                        category: "advanced" }
+        bamFiles: {description: "BAM files to be analysed by GATK. The should be recalibrated beforehand if required.",
+                   category: "required"}
+        vcfBasename: {description: "The basename of the VCF and GVCF files that are outputted by the workflow.",
+                      category: "common"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required"}
+        referenceFastaDict: {description: "Sequence dictionary (.dict) file of the reference.", category: "required"}
+        dbsnpVCF: {description: "A dbSNP VCF file used for checking known sites.", category: "required"}
+        dbsnpVCFIndex: {description: "The index (.tbi) file for the dbsnp VCF.", category: "required"}
+        regions: {description: "A bed file describing the regions to operate on.", category: "common"}
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+                      category: "advanced"}
+        outputDir: {description: "The directory where the output files should be located.", category: "common"}
+        dockerImages: {description: "The docker images should be used for running this pipeline.",
+                       category: "advanced"}
     }
 }
