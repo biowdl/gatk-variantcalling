@@ -119,25 +119,25 @@ workflow GenderAwareVariantCalling {
                 dockerImage = dockerImages["gatk4"]
         }
 
-        # Females don't have Y. Still there are reads that map to it.
-        # Therefore to be able to compare male and female also female Y must be called.
-        call gatk.HaplotypeCallerGvcf as callY {
-            input:
-                gvcfPath = scatterDir + "/" + ".g.vcf.gz",
-                intervalList = [YNonParRegions],
-                ploidy = 1,
-                referenceFasta = referenceFasta,
-                referenceFastaIndex = referenceFastaFai,
-                referenceFastaDict = referenceFastaDict,
-                inputBams = [bam.file],
-                inputBamsIndex = [bam.index],
-                dbsnpVCF = dbsnpVCF,
-                dbsnpVCFIndex = dbsnpVCFIndex,
-                dockerImage = dockerImages["gatk4"]
+        if (gender == "male" || gender == "m") {
+            call gatk.HaplotypeCallerGvcf as callY {
+                input:
+                    gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                    intervalList = [YNonParRegions],
+                    ploidy = 1,
+                    referenceFasta = referenceFasta,
+                    referenceFastaIndex = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    inputBams = [bam.file],
+                    inputBamsIndex = [bam.index],
+                    dbsnpVCF = dbsnpVCF,
+                    dbsnpVCFIndex = dbsnpVCFIndex,
+                    dockerImage = dockerImages["gatk4"]
+            }
         }
 
-        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, [callY.outputGVCF, callX.outputGVCF]])
-        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, [callX.outputGVCFIndex, callY.outputGVCFIndex]])
+        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, select_all([callY.outputGVCF, callX.outputGVCF])])
+        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, select_all([callX.outputGVCFIndex, callY.outputGVCFIndex])])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {
