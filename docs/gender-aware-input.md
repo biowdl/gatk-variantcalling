@@ -13,42 +13,42 @@ GenderAwareVariantCalling.
 <dl>
 <dt id="GenderAwareVariantCalling.bamFilesAndGenders"><a href="#GenderAwareVariantCalling.bamFilesAndGenders">GenderAwareVariantCalling.bamFilesAndGenders</a></dt>
 <dd>
-    <i>Array[Pair[struct(file : File, index : File, md5sum : String?),String]] </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>Array[Pair[struct(file : File, index : File, md5sum : String?),String]] </i><br />
     ???
 </dd>
 <dt id="GenderAwareVariantCalling.dbsnpVCF"><a href="#GenderAwareVariantCalling.dbsnpVCF">GenderAwareVariantCalling.dbsnpVCF</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     dbsnp VCF file used for checking known sites
 </dd>
 <dt id="GenderAwareVariantCalling.dbsnpVCFIndex"><a href="#GenderAwareVariantCalling.dbsnpVCFIndex">GenderAwareVariantCalling.dbsnpVCFIndex</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     index (.tbi) file for the dbsnp VCF
 </dd>
 <dt id="GenderAwareVariantCalling.referenceFasta"><a href="#GenderAwareVariantCalling.referenceFasta">GenderAwareVariantCalling.referenceFasta</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     The reference fasta file
 </dd>
 <dt id="GenderAwareVariantCalling.referenceFastaDict"><a href="#GenderAwareVariantCalling.referenceFastaDict">GenderAwareVariantCalling.referenceFastaDict</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     Sequence dictionary (.dict) file of the reference
 </dd>
 <dt id="GenderAwareVariantCalling.referenceFastaFai"><a href="#GenderAwareVariantCalling.referenceFastaFai">GenderAwareVariantCalling.referenceFastaFai</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     Fasta index (.fai) file of the reference
 </dd>
 <dt id="GenderAwareVariantCalling.XNonParRegions"><a href="#GenderAwareVariantCalling.XNonParRegions">GenderAwareVariantCalling.XNonParRegions</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     ???
 </dd>
 <dt id="GenderAwareVariantCalling.YNonParRegions"><a href="#GenderAwareVariantCalling.YNonParRegions">GenderAwareVariantCalling.YNonParRegions</a></dt>
 <dd>
-    <i>File </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File </i><br />
     ???
 </dd>
 </dl>
@@ -178,12 +178,12 @@ GenderAwareVariantCalling.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAllRegions.bamFile"><a href="#GenderAwareVariantCalling.scatterAllRegions.bamFile">GenderAwareVariantCalling.scatterAllRegions.bamFile</a></dt>
 <dd>
-    <i>File? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File? </i><br />
     Equivalent to biopet scatterregions' `--bamfile` option.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAllRegions.bamIndex"><a href="#GenderAwareVariantCalling.scatterAllRegions.bamIndex">GenderAwareVariantCalling.scatterAllRegions.bamIndex</a></dt>
 <dd>
-    <i>File? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File? </i><br />
     The index for the bamfile given through bamFile.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAllRegions.javaXmx"><a href="#GenderAwareVariantCalling.scatterAllRegions.javaXmx">GenderAwareVariantCalling.scatterAllRegions.javaXmx</a></dt>
@@ -203,17 +203,17 @@ GenderAwareVariantCalling.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAllRegions.regions"><a href="#GenderAwareVariantCalling.scatterAllRegions.regions">GenderAwareVariantCalling.scatterAllRegions.regions</a></dt>
 <dd>
-    <i>File? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File? </i><br />
     The regions to be scattered.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAutosomalRegions.bamFile"><a href="#GenderAwareVariantCalling.scatterAutosomalRegions.bamFile">GenderAwareVariantCalling.scatterAutosomalRegions.bamFile</a></dt>
 <dd>
-    <i>File? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File? </i><br />
     Equivalent to biopet scatterregions' `--bamfile` option.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAutosomalRegions.bamIndex"><a href="#GenderAwareVariantCalling.scatterAutosomalRegions.bamIndex">GenderAwareVariantCalling.scatterAutosomalRegions.bamIndex</a></dt>
 <dd>
-    <i>File? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>File? </i><br />
     The index for the bamfile given through bamFile.
 </dd>
 <dt id="GenderAwareVariantCalling.scatterAutosomalRegions.javaXmx"><a href="#GenderAwareVariantCalling.scatterAutosomalRegions.javaXmx">GenderAwareVariantCalling.scatterAutosomalRegions.javaXmx</a></dt>
@@ -231,6 +231,11 @@ GenderAwareVariantCalling.
     <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
     Equivalent to biopet scatterregions' `--notSplitContigs` flag.
 </dd>
+<dt id="GenderAwareVariantCalling.scatterSize"><a href="#GenderAwareVariantCalling.scatterSize">GenderAwareVariantCalling.scatterSize</a></dt>
+<dd>
+    <i>Int </i><i>&mdash; Default:</i> <code>1000000000</code><br />
+    The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.
+</dd>
 </dl>
 </details>
 
@@ -242,27 +247,22 @@ GenderAwareVariantCalling.
 <dl>
 <dt id="GenderAwareVariantCalling.callX.excludeIntervalList"><a href="#GenderAwareVariantCalling.callX.excludeIntervalList">GenderAwareVariantCalling.callX.excludeIntervalList</a></dt>
 <dd>
-    <i>Array[File]+? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>Array[File]+? </i><br />
     ???
 </dd>
 <dt id="GenderAwareVariantCalling.callY.excludeIntervalList"><a href="#GenderAwareVariantCalling.callY.excludeIntervalList">GenderAwareVariantCalling.callY.excludeIntervalList</a></dt>
 <dd>
-    <i>Array[File]+? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>Array[File]+? </i><br />
     ???
 </dd>
 <dt id="GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
 <dd>
-    <i>Array[File]+? </i><i>&mdash; Default:</i> <code>None</code><br />
+    <i>Array[File]+? </i><br />
     ???
 </dd>
 <dt id="GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy"><a href="#GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy">GenderAwareVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy</a></dt>
 <dd>
-    <i>Int? </i><i>&mdash; Default:</i> <code>None</code><br />
-    ???
-</dd>
-<dt id="GenderAwareVariantCalling.scatterSize"><a href="#GenderAwareVariantCalling.scatterSize">GenderAwareVariantCalling.scatterSize</a></dt>
-<dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1000000000</code><br />
+    <i>Int? </i><br />
     ???
 </dd>
 </dl>
