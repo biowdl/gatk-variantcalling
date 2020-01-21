@@ -213,5 +213,9 @@ workflow GenderAwareVariantCalling {
         outputDir: { description: "The directory where the output files should be located", category: "common" }
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+              category: "advanced"}
+        XNonParRergions: {description: "Bed file with the non-PAR regions of X", category: "required"}
+        YNonParRergions: {description: "Bed file with the non-PAR regions of Y", category: "required"}
     }
 }
