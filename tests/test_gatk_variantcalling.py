@@ -68,7 +68,7 @@ def get_rtg_summary(workflow_dir: Path, sample: str
             "-o", str(output_dir),
             "--sample", sample]
     subprocess.run(args, check=True, stdout=subprocess.PIPE)
-    summary_file = Path(output_dir, "summary.text")
+    summary_file = Path(output_dir, "summary.txt")
     summary_dict_generator = rtg_summary_to_dict_generator(summary_file)
     summary = next(summary_dict_generator)
     return summary
