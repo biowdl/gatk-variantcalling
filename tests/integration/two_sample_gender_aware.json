@@ -1,0 +1,20 @@
+{
+  "GenderAwareVariantCalling.bamFilesAndGenders": [
+    {"left": {
+        "file": "tests/data/gender-aware/male.bam",
+        "index":  "tests/data/gender-aware/male.bai"},
+      "right":"male"},
+    {"left": {
+      "file": "tests/data/gender-aware/female.bam",
+      "index":  "tests/data/gender-aware/female.bai"},
+      "right": "female"}
+  ],
+  "GenderAwareVariantCalling.referenceFasta": "tests/data/gender-aware/reference.fasta",
+  "GenderAwareVariantCalling.referenceFastaFai": "tests/data/gender-aware/reference.fasta.fai",
+  "GenderAwareVariantCalling.referenceFastaDict": "tests/data/gender-aware/reference.dict",
+  "GenderAwareVariantCalling.dbsnpVCF": "tests/data/gender-aware/expected.vcf.gz",
+  "GenderAwareVariantCalling.dbsnpVCFIndex": "tests/data/gender-aware/expected.vcf.gz.tbi",
+  "GenderAwareVariantCalling.scatterSize": 10000,
+  "GenderAwareVariantCalling.XNonParRegions": "tests/data/gender-aware/x_non_par.bed",
+  "GenderAwareVariantCalling.YNonParRegions": "tests/data/gender-aware/y_non_par.bed"
+}

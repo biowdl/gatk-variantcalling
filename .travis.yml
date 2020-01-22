@@ -40,6 +40,7 @@ matrix:
   include:
     - env: TEST=single_sample
     - env: TEST=two_sample
+    - env: TEST=two_sample_gender_aware
     - env: TEST="Womtool validate and submodule up to date"
       stage: lint
       install:
