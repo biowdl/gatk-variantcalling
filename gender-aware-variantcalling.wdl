@@ -38,6 +38,7 @@ workflow GenderAwareVariantCalling {
         File dbsnpVCFIndex
         File XNonParRegions
         File YNonParRegions
+        File? regions
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -65,7 +66,36 @@ workflow GenderAwareVariantCalling {
             outputBed = "autosomal_regions.bed",
             dockerImage = dockerImages["bedtools"]
     }
-    File autosomalRegions = inverseBed.complementBed
+
+    if (defined(regions)) {
+        call bedtools.Intersect as intersectAutosomalRegions {
+            input:
+                regionsA = inverseBed.complementBed,
+                regionsB = select_first([regions]),
+                faidx = referenceFastaFai,
+                dockerImage = dockerImages["bedtools"]
+        }
+
+        call bedtools.Intersect as intersectX {
+            input:
+                regionsA = XNonParRegions,
+                regionsB = select_first([regions]),
+                faidx = referenceFastaFai,
+                dockerImage = dockerImages["bedtools"]
+        }
+
+        call bedtools.Intersect as intersectY {
+            input:
+                regionsA = YNonParRegions,
+                regionsB = select_first([regions]),
+                faidx = referenceFastaFai,
+                dockerImage = dockerImages["bedtools"]
+        }
+    }
+
+    File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
+    File Xregions = select_first([intersectX.intersectedBed, XNonParRegions])
+    File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
 
     call biopet.ScatterRegions as scatterAutosomalRegions {
         input:
@@ -107,7 +137,7 @@ workflow GenderAwareVariantCalling {
         call gatk.HaplotypeCallerGvcf as callX {
             input:
                 gvcfPath = scatterDir + "/" + ".g.vcf.gz",
-                intervalList = [XNonParRegions],
+                intervalList = [Xregions],
                 # Females are default.
                 ploidy = if (gender == "male" || gender == "m") then 1 else 2,
                 referenceFasta = referenceFasta,
@@ -124,7 +154,7 @@ workflow GenderAwareVariantCalling {
             call gatk.HaplotypeCallerGvcf as callY {
                 input:
                     gvcfPath = scatterDir + "/" + ".g.vcf.gz",
-                    intervalList = [YNonParRegions],
+                    intervalList = [Yregions],
                     ploidy = 1,
                     referenceFasta = referenceFasta,
                     referenceFastaIndex = referenceFastaFai,
