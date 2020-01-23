@@ -62,6 +62,7 @@ workflow GenderAwareVariantCalling {
         input:
             inputBed = mergeBeds.mergedBed,
             faidx = referenceFastaFai,
+            outputBed = "autosomal_regions.bed",
             dockerImage = dockerImages["bedtools"]
     }
     File autosomalRegions = inverseBed.complementBed
@@ -196,6 +197,7 @@ workflow GenderAwareVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
+        File autosomalRegionsBed = autosomalRegions
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }

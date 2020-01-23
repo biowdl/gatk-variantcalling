@@ -96,3 +96,9 @@
     - path: test-output/multisample.g.vcf.gz
     - path: test-output/multisample.vcf.gz
     - path: test-output/multisample.vcf.gz.tbi
+    - path: test-output/autosomal_regions.bed
+      contains:
+        - "22	0	10000"
+        - "X	0	5000"
+        - "Y	0	5000"
+
