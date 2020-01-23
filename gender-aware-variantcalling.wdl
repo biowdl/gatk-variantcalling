@@ -20,6 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import "tasks/common.wdl" as common
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
@@ -36,8 +37,8 @@ workflow GenderAwareVariantCalling {
         File referenceFastaFai
         File dbsnpVCF
         File dbsnpVCFIndex
-        File XNonParRegions
-        File YNonParRegions
+        File? XNonParRegions
+        File? YNonParRegions
         File? regions
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
@@ -51,17 +52,34 @@ workflow GenderAwareVariantCalling {
     }
 
     String scatterDir = outputDir + "/scatters/"
+
+    Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
     # We define the 'normal' regions by creating a regions file that covers
     # everything except the XNonParRegions and the YNonParRegions.
-    call bedtools.MergeBedFiles as mergeBeds {
-        input:
-            bedFiles = [XNonParRegions, YNonParRegions],
-            dockerImage = dockerImages["bedtools"]
+
+    if (knownParRegions) {
+        # We define the 'normal' regions by creating a regions file that covers
+        # everything except the XNonParRegions and the YNonParRegions.
+        call bedtools.MergeBedFiles as mergeBeds {
+            input:
+                bedFiles = select_all([XNonParRegions, YNonParRegions]),
+                dockerImage = dockerImages["bedtools"]
+        }
+    }
+
+    if (!knownParRegions) {
+        # If we do not know the non-PAR regions we create an empty bed.
+        # Complementing this will simply return all regions.
+        call common.TextToFile as emptyBed {
+            input:
+                text = "",
+                outputFile = "empty.bed"
+        }
     }
 
     call bedtools.Complement as inverseBed {
         input:
-            inputBed = mergeBeds.mergedBed,
+            inputBed = select_first([mergeBeds.mergedBed, emptyBed.out]),
             faidx = referenceFastaFai,
             outputBed = "autosomal_regions.bed",
             dockerImage = dockerImages["bedtools"]
@@ -77,22 +95,24 @@ workflow GenderAwareVariantCalling {
                 dockerImage = dockerImages["bedtools"]
         }
 
-        call bedtools.Intersect as intersectX {
-            input:
-                regionsA = XNonParRegions,
-                regionsB = select_first([regions]),
-                faidx = referenceFastaFai,
-                outputBed = "intersected_x_non_par_regions.bed",
-                dockerImage = dockerImages["bedtools"]
-        }
+        if (knownParRegions) {
+            call bedtools.Intersect as intersectX {
+                input:
+                    regionsA = select_first([XNonParRegions]),
+                    regionsB = select_first([regions]),
+                    faidx = referenceFastaFai,
+                    outputBed = "intersected_x_non_par_regions.bed",
+                    dockerImage = dockerImages["bedtools"]
+            }
 
-        call bedtools.Intersect as intersectY {
-            input:
-                regionsA = YNonParRegions,
-                regionsB = select_first([regions]),
-                faidx = referenceFastaFai,
-                outputBed = "intersected_y_non_par_regions.bed",
-                dockerImage = dockerImages["bedtools"]
+            call bedtools.Intersect as intersectY {
+                input:
+                    regionsA = select_first([YNonParRegions]),
+                    regionsB = select_first([regions]),
+                    faidx = referenceFastaFai,
+                    outputBed = "intersected_y_non_par_regions.bed",
+                    dockerImage = dockerImages["bedtools"]
+            }
         }
     }
 
@@ -140,28 +160,16 @@ workflow GenderAwareVariantCalling {
                 dockerImages = dockerImages
         }
 
-        call gatk.HaplotypeCallerGvcf as callX {
-            input:
-                gvcfPath = scatterDir + "/" + ".g.vcf.gz",
-                intervalList = [Xregions],
-                # Females are default.
-                ploidy = if male then 1 else 2,
-                referenceFasta = referenceFasta,
-                referenceFastaIndex = referenceFastaFai,
-                referenceFastaDict = referenceFastaDict,
-                inputBams = [bam.file],
-                inputBamsIndex = [bam.index],
-                dbsnpVCF = dbsnpVCF,
-                dbsnpVCFIndex = dbsnpVCFIndex,
-                dockerImage = dockerImages["gatk4"]
-        }
-
-        if (male) {
-            call gatk.HaplotypeCallerGvcf as callY {
+        # If the PAR regions are known we call X and Y separately. If not the
+        # autosomalRegions BED file will simply have contained all regions.
+        if (knownParRegions) {
+            # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
+            call gatk.HaplotypeCallerGvcf as callX {
                 input:
                     gvcfPath = scatterDir + "/" + ".g.vcf.gz",
-                    intervalList = [Yregions],
-                    ploidy = 1,
+                    intervalList = [Xregions],
+                    # Females are default.
+                    ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
                     referenceFastaIndex = referenceFastaFai,
                     referenceFastaDict = referenceFastaDict,
@@ -170,6 +178,24 @@ workflow GenderAwareVariantCalling {
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
                     dockerImage = dockerImages["gatk4"]
+            }
+
+            # Only call y on males. Call on unknowns to be sure.
+            if (male || unknownGender) {
+                call gatk.HaplotypeCallerGvcf as callY {
+                    input:
+                        gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                        intervalList = [Yregions],
+                        ploidy = 1,
+                        referenceFasta = referenceFasta,
+                        referenceFastaIndex = referenceFastaFai,
+                        referenceFastaDict = referenceFastaDict,
+                        inputBams = [bam.file],
+                        inputBamsIndex = [bam.index],
+                        dbsnpVCF = dbsnpVCF,
+                        dbsnpVCFIndex = dbsnpVCFIndex,
+                        dockerImage = dockerImages["gatk4"]
+                }
             }
         }
 
