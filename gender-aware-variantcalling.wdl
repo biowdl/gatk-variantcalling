@@ -73,6 +73,7 @@ workflow GenderAwareVariantCalling {
                 regionsA = inverseBed.complementBed,
                 regionsB = select_first([regions]),
                 faidx = referenceFastaFai,
+                outputBed = "intersected_autosomal_regions.bed",
                 dockerImage = dockerImages["bedtools"]
         }
 
@@ -81,6 +82,7 @@ workflow GenderAwareVariantCalling {
                 regionsA = XNonParRegions,
                 regionsB = select_first([regions]),
                 faidx = referenceFastaFai,
+                outputBed = "intersected_x_non_par_regions.bed",
                 dockerImage = dockerImages["bedtools"]
         }
 
@@ -89,6 +91,7 @@ workflow GenderAwareVariantCalling {
                 regionsA = YNonParRegions,
                 regionsB = select_first([regions]),
                 faidx = referenceFastaFai,
+                outputBed = "intersected_y_non_par_regions.bed",
                 dockerImage = dockerImages["bedtools"]
         }
     }
@@ -228,6 +231,8 @@ workflow GenderAwareVariantCalling {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
         File autosomalRegionsBed = autosomalRegions
+        File xRegionBed = Xregions
+        File yRegionBed = Yregions
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
