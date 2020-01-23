@@ -117,8 +117,8 @@ workflow GatkVariantCalling {
     }
 
     File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
-    File Xregions = select_first([intersectX.intersectedBed, XNonParRegions])
-    File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
+    File Xregions = select_first([intersectX.intersectedBed, XNonParRegions, emptyBed.out])
+    File Yregions = select_first([intersectY.intersectedBed, YNonParRegions, emptyBed.out])
 
     call biopet.ScatterRegions as scatterAutosomalRegions {
         input:
@@ -220,6 +220,7 @@ workflow GatkVariantCalling {
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
+            regions = regions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 

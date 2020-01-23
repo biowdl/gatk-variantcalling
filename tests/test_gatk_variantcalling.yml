@@ -23,7 +23,7 @@
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
+    -i tests/integration/single_sample_gvcf.json gender-aware-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -70,7 +70,7 @@
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
+    -i tests/integration/two_sample_gvcf.json gender-aware-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
