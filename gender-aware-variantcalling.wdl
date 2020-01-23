@@ -27,7 +27,7 @@ import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "gvcf.wdl" as gvcf
 
-workflow GenderAwareVariantCalling {
+workflow GatkVariantCalling {
     input {
         Array[Pair[IndexedBamFile, String?]] bamFilesAndGenders
         String outputDir = "."
