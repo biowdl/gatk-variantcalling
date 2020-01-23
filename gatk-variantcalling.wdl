@@ -54,8 +54,6 @@ workflow GatkVariantCalling {
     String scatterDir = outputDir + "/scatters/"
 
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
-    # We define the 'normal' regions by creating a regions file that covers
-    # everything except the XNonParRegions and the YNonParRegions.
 
     if (knownParRegions) {
         # We define the 'normal' regions by creating a regions file that covers
@@ -77,6 +75,7 @@ workflow GatkVariantCalling {
         }
     }
 
+    # Note: When complementing an empty bed autosomalRegions == allRegions
     call bedtools.Complement as inverseBed {
         input:
             inputBed = select_first([mergeBeds.mergedBed, emptyBed.out]),
