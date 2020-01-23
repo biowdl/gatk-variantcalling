@@ -85,6 +85,7 @@
 - name: two_sample_gender_aware
   tags:
     - integration
+    - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
     -i tests/integration/two_sample_gender_aware.json gender-aware-variantcalling.wdl
@@ -111,6 +112,7 @@
 - name: two_sample_gender_aware_with_regions
   tags:
     - integration
+    - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
     -i tests/integration/two_sample_gender_aware_with_regions.json gender-aware-variantcalling.wdl

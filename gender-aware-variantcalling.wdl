@@ -28,7 +28,7 @@ import "gvcf.wdl" as gvcf
 
 workflow GenderAwareVariantCalling {
     input {
-        Array[Pair[IndexedBamFile, String]] bamFilesAndGenders
+        Array[Pair[IndexedBamFile, String?]] bamFilesAndGenders
         String outputDir = "."
         String vcfBasename = "multisample"
         File referenceFasta
@@ -119,7 +119,10 @@ workflow GenderAwareVariantCalling {
 
     scatter (bamGender in bamFilesAndGenders) {
         IndexedBamFile bam = bamGender.left
-        String gender = bamGender.right
+        String gender = select_first([bamGender.right, "unknown"])
+        Boolean male = (gender == "male" || gender == "m" || gender == "M")
+        Boolean female = (gender == "female" || gender == "f" || gender == "F")
+        Boolean unknownGender = !(male || female)
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
@@ -142,7 +145,7 @@ workflow GenderAwareVariantCalling {
                 gvcfPath = scatterDir + "/" + ".g.vcf.gz",
                 intervalList = [Xregions],
                 # Females are default.
-                ploidy = if (gender == "male" || gender == "m") then 1 else 2,
+                ploidy = if male then 1 else 2,
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
                 referenceFastaDict = referenceFastaDict,
@@ -153,7 +156,7 @@ workflow GenderAwareVariantCalling {
                 dockerImage = dockerImages["gatk4"]
         }
 
-        if (gender == "male" || gender == "m") {
+        if (male) {
             call gatk.HaplotypeCallerGvcf as callY {
                 input:
                     gvcfPath = scatterDir + "/" + ".g.vcf.gz",
