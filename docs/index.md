@@ -30,36 +30,25 @@ For an overview of all available inputs, see [this page](./inputs.html).
   "GatkVariantCalling.referenceFastaDict": "The dict file for the reference fasta",
   "GatkVariantCalling.dbsnpVCF": "A dbSNP VCF file",
   "GatkVariantCalling.dbsnpVCFIndex": "The index (.tbi) for the dbSNP VCF file",
-  "GatkVariantCalling.bamFiles": "A list of input BAM files and their associated indexes"
-}
+  "GatkVariantCalling.bamFilesAndGenders": "A list tuples of bam files, their indexes and the gender of the sample. The gender is optional. " 
+ }
 ```
+`gender` can be set to `null`. Actionable values are `female`, `male`, `F`, 
+`f`, `M`, or `m`. Any other values and `null` will handle the sample as an 
+"unknown" gender (both X and Y are called).
 
 Some additional inputs which may be of interest are:
 ```json
 {
-  "GatkVariantCalling.scatterList.regions": "The path to a bed file containing the regions for which variant calling will be performed",
+  "GatkVariantCalling.regions": "The path to a bed file containing the regions for which variant calling will be performed",
   "GatkVariantCalling.scatterSize": "The size of scatter regions (see explanation of scattering below), defaults to 10,000,000",
-  "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'"
+  "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
+  "GatkVariantCalling.XNonParRergions": "Bed file with the non-PAR regions of X. Required for gender-aware variant calling.",
+  "GatkVariantCalling.YNonParRegions": "Bed file with the non-PAR regions of Y. Required for gender-aware variant calling."
 }
 ```
-
-The inputs for the gender-aware variant-calling pipelines are almost the same, 
-except that files with the non-PAR regions for X and Y are required and that
-bamFiles should have a gender attached to them. All inputs are listed on 
-[this page](./gender-aware-input.md)
-
-```json
-{
-  "GenderAwareVariantCalling.bamFilesAndGenders": "A list of bam files, their indexes and the gender of the sample", 
-  "GenderAwareVariantCalling.referenceFasta": "A reference fasta file",
-  "GenderAwareVariantCalling.referenceFastaFai": "The index for the reference fasta",
-  "GenderAwareVariantCalling.referenceFastaDict": "The dict file for the reference fasta",
-  "GenderAwareVariantCalling.dbsnpVCF": "A dbSNP VCF file",
-  "GenderAwareVariantCalling.dbsnpVCFIndex": "The index (.tbi) for the dbSNP VCF file",
-  "GenderAwareVariantCalling.XNonParRergions": "Bed file with the non-PAR regions of X",
-  "GenderAwareVariantCalling.YNonParRegions": "Bed file with the non-PAR regions of Y"
-}
-```
+When the X and Y non-PAR regions are not both provided, GATK will call all 
+chromosomes with ploidy 2 naively. 
 
 An output directory can be set using an `options.json` file. See [the
 cromwell documentation](
@@ -89,25 +78,10 @@ need a custom configuration to allow this.
   "GatkVariantCalling.referenceFastaFai": "/home/user/genomes/human/GRCh38.fasta.fai",
   "GatkVariantCalling.referenceFastaDict": "/home/user/genomes/human/GRCh38.dict",
   "GatkVariantCalling.vcfBasename": "s1",
+  "GatkVariantCalling.XNonParRegions": "/home/user/genomes/human/x_non_par.bed",
+  "GatkVariantCalling.YNonParRegions": "/home/user/genomes/human/y_non_par.bed",
   "GatkVariantCalling.outputDir": "/home/user/analysis/results/",
-  "GatkVariantCalling.bamFiles": [
-    {
-      "file": "/home/user/mapping/results/s1_1.bam",
-      "index": "/home/user/mapping/results/s1_1.bai"
-    },
-    {
-      "file": "/home/user/mapping/results/s1_2.bam",
-      "index": "/home/user/mapping/results/s1_2.bai"
-    }
-  ]
-}
-```
-
-Gender-aware variant calling example
-
-```json
-{
-  "GenderAwareVariantCalling.bamFilesAndGenders": [
+  "GatkVariantCalling.bamFilesAndGenders": [
     {"left": {
         "file": "/home/user/mapping/results/s1_1.bam",
         "index":  "/home/user/mapping/results/s1_1.bai"},
@@ -115,17 +89,12 @@ Gender-aware variant calling example
     {"left": {
       "file": "/home/user/mapping/results/s1_2.bam",
       "index":  "/home/user/mapping/results/s1_2.bai"},
-      "right": "female"}
-  ],
-  "GenderAwareVariantCalling.dbsnpVCF": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz",
-  "GenderAwareVariantCalling.dbsnpVCFIndex": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz.tbi",
-  "GenderAwareVariantCalling.referenceFasta": "/home/user/genomes/human/GRCh38.fasta",
-  "GenderAwareVariantCalling.referenceFastaFai": "/home/user/genomes/human/GRCh38.fasta.fai",
-  "GenderAwareVariantCalling.referenceFastaDict": "/home/user/genomes/human/GRCh38.dict",
-  "GenderAwareVariantCalling.vcfBasename": "s1",
-  "GenderAwareVariantCalling.outputDir": "/home/user/analysis/results/",
-  "GenderAwareVariantCalling.XNonParRegions": "/home/user/genomes/human/x_non_par.bed",
-  "GenderAwareVariantCalling.YNonParRegions": "/home/user/genomes/human/y_non_par.bed"
+      "right": "female"},
+   {"left": {
+      "file": "/home/user/mapping/results/s1_3.bam",
+      "index":  "/home/user/mapping/results/s1_3.bai"},
+      "right": null}
+   ]
 }
 ```
 

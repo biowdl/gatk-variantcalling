@@ -11,35 +11,35 @@ GatkVariantCalling.
 
 ## Required inputs
 <dl>
-<dt id="GatkVariantCalling.bamFiles"><a href="#GatkVariantCalling.bamFiles">GatkVariantCalling.bamFiles</a></dt>
+<dt id="GatkVariantCalling.bamFilesAndGenders"><a href="#GatkVariantCalling.bamFilesAndGenders">GatkVariantCalling.bamFilesAndGenders</a></dt>
 <dd>
-    <i>Array[struct(file : File, index : File, md5sum : String?)] </i><br />
-    BAM files to be analysed by GATK. The should be recalibrated beforehand if required.
+    <i>Array[Pair[struct(file : File, index : File, md5sum : String?),String?]] </i><br />
+    List of tuples of BAM files and gender. BAM file to be analysed by GATK. The should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.
 </dd>
 <dt id="GatkVariantCalling.dbsnpVCF"><a href="#GatkVariantCalling.dbsnpVCF">GatkVariantCalling.dbsnpVCF</a></dt>
 <dd>
     <i>File </i><br />
-    A dbSNP VCF file used for checking known sites.
+    dbsnp VCF file used for checking known sites
 </dd>
 <dt id="GatkVariantCalling.dbsnpVCFIndex"><a href="#GatkVariantCalling.dbsnpVCFIndex">GatkVariantCalling.dbsnpVCFIndex</a></dt>
 <dd>
     <i>File </i><br />
-    The index (.tbi) file for the dbsnp VCF
+    index (.tbi) file for the dbsnp VCF
 </dd>
 <dt id="GatkVariantCalling.referenceFasta"><a href="#GatkVariantCalling.referenceFasta">GatkVariantCalling.referenceFasta</a></dt>
 <dd>
     <i>File </i><br />
-    The reference fasta file.
+    The reference fasta file
 </dd>
 <dt id="GatkVariantCalling.referenceFastaDict"><a href="#GatkVariantCalling.referenceFastaDict">GatkVariantCalling.referenceFastaDict</a></dt>
 <dd>
     <i>File </i><br />
-    Sequence dictionary (.dict) file of the reference.
+    Sequence dictionary (.dict) file of the reference
 </dd>
 <dt id="GatkVariantCalling.referenceFastaFai"><a href="#GatkVariantCalling.referenceFastaFai">GatkVariantCalling.referenceFastaFai</a></dt>
 <dd>
     <i>File </i><br />
-    Fasta index (.fai) file of the reference.
+    Fasta index (.fai) file of the reference
 </dd>
 </dl>
 
@@ -48,7 +48,7 @@ GatkVariantCalling.
 <dt id="GatkVariantCalling.outputDir"><a href="#GatkVariantCalling.outputDir">GatkVariantCalling.outputDir</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"."</code><br />
-    The directory where the output files should be located.
+    The directory where the output files should be located
 </dd>
 <dt id="GatkVariantCalling.regions"><a href="#GatkVariantCalling.regions">GatkVariantCalling.regions</a></dt>
 <dd>
@@ -58,7 +58,17 @@ GatkVariantCalling.
 <dt id="GatkVariantCalling.vcfBasename"><a href="#GatkVariantCalling.vcfBasename">GatkVariantCalling.vcfBasename</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"multisample"</code><br />
-    The basename of the VCF and GVCF files that are outputted by the workflow.
+    The basename of the VCF and GVCF files that are outputted by the workflow
+</dd>
+<dt id="GatkVariantCalling.XNonParRegions"><a href="#GatkVariantCalling.XNonParRegions">GatkVariantCalling.XNonParRegions</a></dt>
+<dd>
+    <i>File? </i><br />
+    Bed file with the non-PAR regions of X
+</dd>
+<dt id="GatkVariantCalling.YNonParRegions"><a href="#GatkVariantCalling.YNonParRegions">GatkVariantCalling.YNonParRegions</a></dt>
+<dd>
+    <i>File? </i><br />
+    Bed file with the non-PAR regions of Y
 </dd>
 </dl>
 
@@ -66,10 +76,40 @@ GatkVariantCalling.
 <details>
 <summary> Show/Hide </summary>
 <dl>
+<dt id="GatkVariantCalling.callX.contamination"><a href="#GatkVariantCalling.callX.contamination">GatkVariantCalling.callX.contamination</a></dt>
+<dd>
+    <i>Float </i><i>&mdash; Default:</i> <code>0.0</code><br />
+    Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callX.javaXmx"><a href="#GatkVariantCalling.callX.javaXmx">GatkVariantCalling.callX.javaXmx</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"4G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.callX.memory"><a href="#GatkVariantCalling.callX.memory">GatkVariantCalling.callX.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
+    The amount of memory this job will use.
+</dd>
+<dt id="GatkVariantCalling.callY.contamination"><a href="#GatkVariantCalling.callY.contamination">GatkVariantCalling.callY.contamination</a></dt>
+<dd>
+    <i>Float </i><i>&mdash; Default:</i> <code>0.0</code><br />
+    Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callY.javaXmx"><a href="#GatkVariantCalling.callY.javaXmx">GatkVariantCalling.callY.javaXmx</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"4G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.callY.memory"><a href="#GatkVariantCalling.callY.memory">GatkVariantCalling.callY.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
+    The amount of memory this job will use.
+</dd>
 <dt id="GatkVariantCalling.dockerImages"><a href="#GatkVariantCalling.dockerImages">GatkVariantCalling.dockerImages</a></dt>
 <dd>
-    <i>Map[String,String] </i><i>&mdash; Default:</i> <code>{"picard": "quay.io/biocontainers/picard:2.20.5--0", "gatk4": "quay.io/biocontainers/gatk4:4.1.0.0--0", "biopet-scatterregions": "quay.io/biocontainers/biopet-scatterregions:0.2--0"}</code><br />
-    The docker images should be used for running this pipeline.
+    <i>Map[String,String] </i><i>&mdash; Default:</i> <code>{"bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3", "picard": "quay.io/biocontainers/picard:2.20.5--0", "gatk4": "quay.io/biocontainers/gatk4:4.1.0.0--0", "biopet-scatterregions": "quay.io/biocontainers/biopet-scatterregions:0.2--0"}</code><br />
+    specify which docker images should be used for running this pipeline
 </dd>
 <dt id="GatkVariantCalling.gatherGvcfs.intervals"><a href="#GatkVariantCalling.gatherGvcfs.intervals">GatkVariantCalling.gatherGvcfs.intervals</a></dt>
 <dd>
@@ -121,32 +161,67 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
     The amount of memory this job will use.
 </dd>
-<dt id="GatkVariantCalling.orderedScatters.dockerImage"><a href="#GatkVariantCalling.orderedScatters.dockerImage">GatkVariantCalling.orderedScatters.dockerImage</a></dt>
+<dt id="GatkVariantCalling.mergeBeds.outputBed"><a href="#GatkVariantCalling.mergeBeds.outputBed">GatkVariantCalling.mergeBeds.outputBed</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"merged.bed"</code><br />
+    The path to write the output to
+</dd>
+<dt id="GatkVariantCalling.orderedAllScatters.dockerImage"><a href="#GatkVariantCalling.orderedAllScatters.dockerImage">GatkVariantCalling.orderedAllScatters.dockerImage</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"python:3.7-slim"</code><br />
     The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
 </dd>
-<dt id="GatkVariantCalling.scatterList.bamFile"><a href="#GatkVariantCalling.scatterList.bamFile">GatkVariantCalling.scatterList.bamFile</a></dt>
+<dt id="GatkVariantCalling.orderedAutosomalScatters.dockerImage"><a href="#GatkVariantCalling.orderedAutosomalScatters.dockerImage">GatkVariantCalling.orderedAutosomalScatters.dockerImage</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"python:3.7-slim"</code><br />
+    The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
+</dd>
+<dt id="GatkVariantCalling.scatterAllRegions.bamFile"><a href="#GatkVariantCalling.scatterAllRegions.bamFile">GatkVariantCalling.scatterAllRegions.bamFile</a></dt>
 <dd>
     <i>File? </i><br />
     Equivalent to biopet scatterregions' `--bamfile` option.
 </dd>
-<dt id="GatkVariantCalling.scatterList.bamIndex"><a href="#GatkVariantCalling.scatterList.bamIndex">GatkVariantCalling.scatterList.bamIndex</a></dt>
+<dt id="GatkVariantCalling.scatterAllRegions.bamIndex"><a href="#GatkVariantCalling.scatterAllRegions.bamIndex">GatkVariantCalling.scatterAllRegions.bamIndex</a></dt>
 <dd>
     <i>File? </i><br />
     The index for the bamfile given through bamFile.
 </dd>
-<dt id="GatkVariantCalling.scatterList.javaXmx"><a href="#GatkVariantCalling.scatterList.javaXmx">GatkVariantCalling.scatterList.javaXmx</a></dt>
+<dt id="GatkVariantCalling.scatterAllRegions.javaXmx"><a href="#GatkVariantCalling.scatterAllRegions.javaXmx">GatkVariantCalling.scatterAllRegions.javaXmx</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"8G"</code><br />
     The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
 </dd>
-<dt id="GatkVariantCalling.scatterList.memory"><a href="#GatkVariantCalling.scatterList.memory">GatkVariantCalling.scatterList.memory</a></dt>
+<dt id="GatkVariantCalling.scatterAllRegions.memory"><a href="#GatkVariantCalling.scatterAllRegions.memory">GatkVariantCalling.scatterAllRegions.memory</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
     The amount of memory this job will use.
 </dd>
-<dt id="GatkVariantCalling.scatterList.notSplitContigs"><a href="#GatkVariantCalling.scatterList.notSplitContigs">GatkVariantCalling.scatterList.notSplitContigs</a></dt>
+<dt id="GatkVariantCalling.scatterAllRegions.notSplitContigs"><a href="#GatkVariantCalling.scatterAllRegions.notSplitContigs">GatkVariantCalling.scatterAllRegions.notSplitContigs</a></dt>
+<dd>
+    <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
+    Equivalent to biopet scatterregions' `--notSplitContigs` flag.
+</dd>
+<dt id="GatkVariantCalling.scatterAutosomalRegions.bamFile"><a href="#GatkVariantCalling.scatterAutosomalRegions.bamFile">GatkVariantCalling.scatterAutosomalRegions.bamFile</a></dt>
+<dd>
+    <i>File? </i><br />
+    Equivalent to biopet scatterregions' `--bamfile` option.
+</dd>
+<dt id="GatkVariantCalling.scatterAutosomalRegions.bamIndex"><a href="#GatkVariantCalling.scatterAutosomalRegions.bamIndex">GatkVariantCalling.scatterAutosomalRegions.bamIndex</a></dt>
+<dd>
+    <i>File? </i><br />
+    The index for the bamfile given through bamFile.
+</dd>
+<dt id="GatkVariantCalling.scatterAutosomalRegions.javaXmx"><a href="#GatkVariantCalling.scatterAutosomalRegions.javaXmx">GatkVariantCalling.scatterAutosomalRegions.javaXmx</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"8G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.scatterAutosomalRegions.memory"><a href="#GatkVariantCalling.scatterAutosomalRegions.memory">GatkVariantCalling.scatterAutosomalRegions.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
+    The amount of memory this job will use.
+</dd>
+<dt id="GatkVariantCalling.scatterAutosomalRegions.notSplitContigs"><a href="#GatkVariantCalling.scatterAutosomalRegions.notSplitContigs">GatkVariantCalling.scatterAutosomalRegions.notSplitContigs</a></dt>
 <dd>
     <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
     Equivalent to biopet scatterregions' `--notSplitContigs` flag.
@@ -160,5 +235,37 @@ GatkVariantCalling.
 </details>
 
 
+
+## Other inputs
+<details>
+<summary> Show/Hide </summary>
+<dl>
+<dt id="GatkVariantCalling.callX.excludeIntervalList"><a href="#GatkVariantCalling.callX.excludeIntervalList">GatkVariantCalling.callX.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    ???
+</dd>
+<dt id="GatkVariantCalling.callY.excludeIntervalList"><a href="#GatkVariantCalling.callY.excludeIntervalList">GatkVariantCalling.callY.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    ???
+</dd>
+<dt id="GatkVariantCalling.emptyBed.dockerImage"><a href="#GatkVariantCalling.emptyBed.dockerImage">GatkVariantCalling.emptyBed.dockerImage</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"</code><br />
+    ???
+</dd>
+<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    ???
+</dd>
+<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy</a></dt>
+<dd>
+    <i>Int? </i><br />
+    ???
+</dd>
+</dl>
+</details>
 
 
