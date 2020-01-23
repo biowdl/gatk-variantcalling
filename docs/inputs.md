@@ -45,6 +45,26 @@ GatkVariantCalling.
 
 ## Other common inputs
 <dl>
+<dt id="GatkVariantCalling.callX.excludeIntervalList"><a href="#GatkVariantCalling.callX.excludeIntervalList">GatkVariantCalling.callX.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    Bed files or interval lists describing the regions to NOT operate on.
+</dd>
+<dt id="GatkVariantCalling.callY.excludeIntervalList"><a href="#GatkVariantCalling.callY.excludeIntervalList">GatkVariantCalling.callY.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    Bed files or interval lists describing the regions to NOT operate on.
+</dd>
+<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    Bed files or interval lists describing the regions to NOT operate on.
+</dd>
+<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy</a></dt>
+<dd>
+    <i>Int? </i><br />
+    The ploidy with which the variants should be called.
+</dd>
 <dt id="GatkVariantCalling.outputDir"><a href="#GatkVariantCalling.outputDir">GatkVariantCalling.outputDir</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"."</code><br />
@@ -110,6 +130,11 @@ GatkVariantCalling.
 <dd>
     <i>Map[String,String] </i><i>&mdash; Default:</i> <code>{"bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3", "picard": "quay.io/biocontainers/picard:2.20.5--0", "gatk4": "quay.io/biocontainers/gatk4:4.1.0.0--0", "biopet-scatterregions": "quay.io/biocontainers/biopet-scatterregions:0.2--0"}</code><br />
     specify which docker images should be used for running this pipeline
+</dd>
+<dt id="GatkVariantCalling.emptyBed.dockerImage"><a href="#GatkVariantCalling.emptyBed.dockerImage">GatkVariantCalling.emptyBed.dockerImage</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"</code><br />
+    The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
 </dd>
 <dt id="GatkVariantCalling.gatherGvcfs.intervals"><a href="#GatkVariantCalling.gatherGvcfs.intervals">GatkVariantCalling.gatherGvcfs.intervals</a></dt>
 <dd>
@@ -235,37 +260,5 @@ GatkVariantCalling.
 </details>
 
 
-
-## Other inputs
-<details>
-<summary> Show/Hide </summary>
-<dl>
-<dt id="GatkVariantCalling.callX.excludeIntervalList"><a href="#GatkVariantCalling.callX.excludeIntervalList">GatkVariantCalling.callX.excludeIntervalList</a></dt>
-<dd>
-    <i>Array[File]+? </i><br />
-    ???
-</dd>
-<dt id="GatkVariantCalling.callY.excludeIntervalList"><a href="#GatkVariantCalling.callY.excludeIntervalList">GatkVariantCalling.callY.excludeIntervalList</a></dt>
-<dd>
-    <i>Array[File]+? </i><br />
-    ???
-</dd>
-<dt id="GatkVariantCalling.emptyBed.dockerImage"><a href="#GatkVariantCalling.emptyBed.dockerImage">GatkVariantCalling.emptyBed.dockerImage</a></dt>
-<dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"</code><br />
-    ???
-</dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
-<dd>
-    <i>Array[File]+? </i><br />
-    ???
-</dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy</a></dt>
-<dd>
-    <i>Int? </i><br />
-    ???
-</dd>
-</dl>
-</details>
 
 
