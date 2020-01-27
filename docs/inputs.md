@@ -24,7 +24,7 @@ GatkVariantCalling.
 <dt id="GatkVariantCalling.dbsnpVCFIndex"><a href="#GatkVariantCalling.dbsnpVCFIndex">GatkVariantCalling.dbsnpVCFIndex</a></dt>
 <dd>
     <i>File </i><br />
-    index (.tbi) file for the dbsnp VCF
+    Index (.tbi) file for the dbsnp VCF
 </dd>
 <dt id="GatkVariantCalling.referenceFasta"><a href="#GatkVariantCalling.referenceFasta">GatkVariantCalling.referenceFasta</a></dt>
 <dd>
