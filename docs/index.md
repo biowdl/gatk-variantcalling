@@ -29,13 +29,21 @@ For an overview of all available inputs, see [this page](./inputs.html).
   "GatkVariantCalling.referenceFastaFai": "The index for the reference fasta",
   "GatkVariantCalling.referenceFastaDict": "The dict file for the reference fasta",
   "GatkVariantCalling.dbsnpVCF": "A dbSNP VCF file",
-  "GatkVariantCalling.dbsnpVCFIndex": "The index (.tbi) for the dbSNP VCF file",
+  "GatkVariantCalling.dbsnpVCFIndex": "Index (.tbi) for the dbSNP VCF file",
   "GatkVariantCalling.bamFilesAndGenders": "A list tuples of bam files, their indexes and the gender of the sample. The gender is optional. " 
  }
 ```
 `gender` can be set to `null`. Actionable values are `female`, `male`, `F`, 
 `f`, `M`, or `m`. Any other values and `null` will handle the sample as an 
-"unknown" gender (both X and Y are called).
+"unknown" gender.
+
+The following actions are taken for each gender:
+
++ `female`: The non-PAR regions of X will be called with a ploidy of 2. Y will 
+  not be called.
++ `male`: The non-PAR regions of both X and Y will be called with a ploidy of 1. 
++ `unknown`: The non-PAR regions of X will be called with a ploidy of 2. The 
+   non-PAR region of Y will be called with a ploidy of 1.
 
 Some additional inputs which may be of interest are:
 ```json
