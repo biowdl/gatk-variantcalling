@@ -19,7 +19,7 @@
 # SOFTWARE.
 
 import subprocess
-from typing import Dict, Generator, Union
+from typing import Dict, Generator, Optional, Union
 import tempfile
 from pathlib import Path
 
@@ -52,7 +52,24 @@ def test_variants_gender_aware_female(workflow_dir: Path):
     assert summary["False-neg"] == 0
 
 
-def get_rtg_summary(workflow_dir: Path, sample: str
+@pytest.mark.workflow("two_sample_gender_aware_with_regions")
+def test_variants_gender_aware_female_regions(workflow_dir: Path):
+    regions = Path(TEST_DATA, "gender-aware", "regions.bed")
+    summary = get_rtg_summary(workflow_dir, "female", regions=regions)
+    assert summary["False-pos"] == 0
+    assert summary["False-neg"] == 0
+
+
+@pytest.mark.workflow("two_sample_gender_aware_with_regions")
+def test_variants_gender_aware_male_regions(workflow_dir: Path):
+    regions = Path(TEST_DATA, "gender-aware", "regions.bed")
+    summary = get_rtg_summary(workflow_dir, "male", regions=regions)
+    assert summary["False-pos"] == 1
+    assert summary["False-neg"] == 0
+
+
+def get_rtg_summary(workflow_dir: Path, sample: str,
+                    regions: Optional[Path] = None
                     ) -> Dict[str, Union[float, int]]:
     baseline_vcf_file = Path(TEST_DATA, "gender-aware", "expected.vcf.gz")
     calls_vcf_file = Path(workflow_dir, "test-output", "multisample.vcf.gz")
@@ -67,6 +84,8 @@ def get_rtg_summary(workflow_dir: Path, sample: str
             "-t", str(sdf_path),
             "-o", str(output_dir),
             "--sample", sample]
+    if regions is not None:
+        args.extend(["-e", str(regions)])
     subprocess.run(args, check=True, stdout=subprocess.PIPE)
     summary_file = Path(output_dir, "summary.txt")
     summary_dict_generator = rtg_summary_to_dict_generator(summary_file)

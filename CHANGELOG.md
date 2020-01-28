@@ -8,9 +8,10 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
-version 1.1.0-dev
+version 2.0.0-dev
 -----------------
-+ Added gender-aware variant calling pipeline.
++ Added gender-aware capabilities to the pipeline. This has changed the input
+  format.
 + Added inputs overview to the docs.
 + Added parameter_mets.
 + Added wdl-aid to linting.
