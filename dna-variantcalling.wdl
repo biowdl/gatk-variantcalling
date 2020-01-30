@@ -163,9 +163,9 @@ workflow GatkVariantCalling {
         # autosomalRegions BED file will simply have contained all regions.
         if (knownParRegions) {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
-            call gatk.HaplotypeCallerGvcf as callX {
+            call gatk.HaplotypeCaller as callX {
                 input:
-                    gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                    outputPath = scatterDir + "/" + ".g.vcf.gz",
                     intervalList = [Xregions],
                     # Females are default.
                     ploidy = if male then 1 else 2,
@@ -176,14 +176,15 @@ workflow GatkVariantCalling {
                     inputBamsIndex = [bam.index],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
+                    gvcf = true,
                     dockerImage = dockerImages["gatk4"]
             }
 
             # Only call y on males. Call on unknowns to be sure.
             if (male || unknownGender) {
-                call gatk.HaplotypeCallerGvcf as callY {
+                call gatk.HaplotypeCaller as callY {
                     input:
-                        gvcfPath = scatterDir + "/" + ".g.vcf.gz",
+                        outputPath = scatterDir + "/" + ".g.vcf.gz",
                         intervalList = [Yregions],
                         ploidy = 1,
                         referenceFasta = referenceFasta,
@@ -193,13 +194,14 @@ workflow GatkVariantCalling {
                         inputBamsIndex = [bam.index],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
+                        gvcf = true,
                         dockerImage = dockerImages["gatk4"]
                 }
             }
         }
 
-        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, select_all([callY.outputGVCF, callX.outputGVCF])])
-        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, select_all([callX.outputGVCFIndex, callY.outputGVCFIndex])])
+        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, select_all([callY.outputVCF, callX.outputVCF])])
+        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {

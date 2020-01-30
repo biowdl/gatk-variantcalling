@@ -39,9 +39,9 @@ workflow Gvcf {
     String scatterDir = outputDir + "/scatters/"
 
     scatter (bed in scatterList) {
-        call gatk.HaplotypeCallerGvcf as haplotypeCallerGvcf {
+        call gatk.HaplotypeCaller as haplotypeCallerGvcf {
             input:
-                gvcfPath = scatterDir + "/" + basename(bed) + ".g.vcf.gz",
+                outputPath = scatterDir + "/" + basename(bed) + ".g.vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
@@ -50,13 +50,14 @@ workflow Gvcf {
                 inputBamsIndex = [bamIndex],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                gvcf = true,
                 dockerImage = dockerImages["gatk4"]
         }
     }
 
     output {
-        Array[File] outputGvcfs = haplotypeCallerGvcf.outputGVCF
-        Array[File] outputGvcfsIndex = haplotypeCallerGvcf.outputGVCFIndex
+        Array[File] outputGvcfs = haplotypeCallerGvcf.outputVCF
+        Array[File] outputGvcfsIndex = haplotypeCallerGvcf.outputVCFIndex
     }
 
     parameter_meta {
