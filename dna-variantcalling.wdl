@@ -25,7 +25,7 @@ import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "gvcf.wdl" as gvcf
+import "haplotypecaller.wdl" as gvcf
 
 workflow GatkVariantCalling {
     input {
@@ -144,7 +144,7 @@ workflow GatkVariantCalling {
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
-        call gvcf.Gvcf as Gvcf {
+        call gvcf.Caller as Gvcf {
             input:
                 bam = bam.file,
                 bamIndex = bam.index,
@@ -155,6 +155,7 @@ workflow GatkVariantCalling {
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 outputDir = scatterDir,
+                gvcf = true,
                 dockerImages = dockerImages
         }
 
@@ -199,8 +200,8 @@ workflow GatkVariantCalling {
             }
         }
 
-        Array[File] GVCFs = flatten([Gvcf.outputGvcfs, select_all([callY.outputVCF, callX.outputVCF])])
-        Array[File] GVCFIndexes = flatten([Gvcf.outputGvcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+        Array[File] GVCFs = flatten([Gvcf.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
+        Array[File] GVCFIndexes = flatten([Gvcf.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
     }
 
     call gatk.CombineGVCFs as gatherGvcfs {

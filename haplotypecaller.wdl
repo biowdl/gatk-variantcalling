@@ -22,7 +22,7 @@ version 1.0
 
 import "tasks/gatk.wdl" as gatk
 
-workflow Gvcf {
+workflow Caller {
     input {
         File bam
         File bamIndex
@@ -33,6 +33,7 @@ workflow Gvcf {
         File referenceFastaFai
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        Boolean gvcf
         Map[String, String] dockerImages
     }
 
@@ -50,14 +51,14 @@ workflow Gvcf {
                 inputBamsIndex = [bamIndex],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
-                gvcf = true,
+                gvcf = gvcf,
                 dockerImage = dockerImages["gatk4"]
         }
     }
 
     output {
-        Array[File] outputGvcfs = haplotypeCallerGvcf.outputVCF
-        Array[File] outputGvcfsIndex = haplotypeCallerGvcf.outputVCFIndex
+        Array[File] outputVcfs = haplotypeCallerGvcf.outputVCF
+        Array[File] outputVcfsIndex = haplotypeCallerGvcf.outputVCFIndex
     }
 
     parameter_meta {

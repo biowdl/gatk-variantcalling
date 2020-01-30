@@ -151,5 +151,5 @@
     contains:
       - "WorkflowSucceededState"
   files:
-    - path: "test-output/sample.vcf.gz"
-    - path: "test-output/sample.vcf.gz.tbi"
+    - path: "test-output/multisample.vcf.gz"
+    - path: "test-output/multisample.vcf.gz.tbi"

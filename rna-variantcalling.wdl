@@ -23,13 +23,14 @@ version 1.0
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
+import "haplotypecaller.wdl" as haplotypecaller
 
 workflow GatkRnaVariantCalling {
     input {
-        File bam
-        File bamIndex
+        Array[File] + bamFiles
+        Array[File] + bamIndexes
         String outputDir = "."
-        String vcfBasename = "sample"
+        String vcfBasename = "multisample"
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -63,27 +64,27 @@ workflow GatkRnaVariantCalling {
             # python container.
     }
 
-    scatter (bed in orderedScatters.reorderedScatters) {
-        call gatk.HaplotypeCaller as HaplotypeCaller {
+    scatter (i in range(length(bamFiles))) {
+        String scatterDir = outputDir + "/scatters/" + basename(bamFiles[i], ".bam") + "/"
+        call haplotypecaller.Caller as haplotypeCaller {
             input:
-                inputBams = [bam],
-                inputBamsIndex = [bamIndex],
-                intervalList = [bed],
-                outputPath = outputDir + "/scatters/" + basename(bed) + ".vcf.gz",
+                bam = bamFiles[i],
+                bamIndex = bamIndexes[i],
+                scatterList = orderedScatters.reorderedScatters,
                 referenceFasta = referenceFasta,
-                referenceFastaIndex = referenceFastaFai,
                 referenceFastaDict = referenceFastaDict,
+                referenceFastaFai = referenceFastaFai,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                outputDir = scatterDir,
                 gvcf = false,
-                dockerImage = dockerImages["gatk4"]
+                dockerImages = dockerImages
         }
     }
-
     call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVCFs = HaplotypeCaller.outputVCF,
-            inputVCFsIndexes =  HaplotypeCaller.outputVCFIndex,
+            inputVCFs = flatten(haplotypeCaller.outputVcfs),
+            inputVCFsIndexes = flatten(haplotypeCaller.outputVcfsIndex),
             outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }
