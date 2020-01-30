@@ -51,8 +51,6 @@ workflow GatkVariantCalling {
         }
     }
 
-    String scatterDir = outputDir + "/scatters/"
-
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
 
     if (knownParRegions) {
@@ -142,6 +140,7 @@ workflow GatkVariantCalling {
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
         Boolean female = (gender == "female" || gender == "f" || gender == "F")
         Boolean unknownGender = !(male || female)
+        String scatterDir = outputDir + "/scatters/" + basename(bam.file, ".bam") + "/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
@@ -155,7 +154,7 @@ workflow GatkVariantCalling {
                 referenceFastaFai = referenceFastaFai,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
-                outputDir = outputDir + "/samples/" + basename(bam.file, ".bam"),
+                outputDir = scatterDir,
                 dockerImages = dockerImages
         }
 
@@ -165,7 +164,7 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/" + ".g.vcf.gz",
+                    outputPath = scatterDir + "/" + basename(bam.file, ".bam") + ".X.g.vcf.gz",
                     intervalList = [Xregions],
                     # Females are default.
                     ploidy = if male then 1 else 2,
@@ -184,7 +183,7 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/" + ".g.vcf.gz",
+                        outputPath = scatterDir + "/" + basename(bam.file, ".bam") + ".Y.g.vcf.gz",
                         intervalList = [Yregions],
                         ploidy = 1,
                         referenceFasta = referenceFasta,
