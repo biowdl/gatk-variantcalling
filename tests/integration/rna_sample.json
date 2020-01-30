@@ -1,0 +1,10 @@
+{
+  "GatkRnaVariantCalling.bam": "tests/data/rna3.bam",
+  "GatkRnaVariantCalling.bamIndex": "tests/data/rna3.bai",
+  "GatkRnaVariantCalling.referenceFasta": "tests/data/reference.fasta",
+  "GatkRnaVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
+  "GatkRnaVariantCalling.referenceFastaDict": "tests/data/reference.dict",
+  "GatkRnaVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
+  "GatkRnaVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
+  "GatkRnaVariantCalling.scatterSize": 10000
+}
