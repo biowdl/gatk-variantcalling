@@ -1,10 +1,8 @@
 {
   "GatkVariantCalling.bamFilesAndGenders": [
-    {"left": {
-      "file": "tests/data/wgs2.realign.bam",
-      "index":  "tests/data/wgs2.realign.bai"},
-      "right": null
-    }],
+    {"bam": "tests/data/wgs2.realign.bam",
+      "bamIndex":  "tests/data/wgs2.realign.bai"}
+    ],
   "GatkVariantCalling.referenceFasta": "tests/data/reference.fasta",
   "GatkVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
   "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",

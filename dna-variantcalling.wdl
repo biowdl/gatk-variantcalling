@@ -29,7 +29,7 @@ import "haplotypecaller.wdl" as gvcf
 
 workflow GatkVariantCalling {
     input {
-        Array[Pair[IndexedBamFile, String?]] bamFilesAndGenders
+        Array[BamAndGender] bamFilesAndGenders
         String outputDir = "."
         String vcfBasename = "multisample"
         File referenceFasta
@@ -135,19 +135,18 @@ workflow GatkVariantCalling {
     }
 
     scatter (bamGender in bamFilesAndGenders) {
-        IndexedBamFile bam = bamGender.left
-        String gender = select_first([bamGender.right, "unknown"])
+        String gender = select_first([bamGender.gender, "unknown"])
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
         Boolean female = (gender == "female" || gender == "f" || gender == "F")
         Boolean unknownGender = !(male || female)
-        String scatterDir = outputDir + "/scatters/" + basename(bam.file, ".bam") + "/"
+        String scatterDir = outputDir + "/scatters/" + basename(bamGender.bam, ".bam") + "/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
         call gvcf.Caller as Gvcf {
             input:
-                bam = bam.file,
-                bamIndex = bam.index,
+                bam = bamGender.bam,
+                bamIndex = bamGender.bamIndex,
                 scatterList = orderedAutosomalScatters.reorderedScatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
@@ -165,15 +164,15 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/" + basename(bam.file, ".bam") + ".X.g.vcf.gz",
+                    outputPath = scatterDir + "/" + basename(bamGender.bam, ".bam") + ".X.g.vcf.gz",
                     intervalList = [Xregions],
                     # Females are default.
                     ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
                     referenceFastaIndex = referenceFastaFai,
                     referenceFastaDict = referenceFastaDict,
-                    inputBams = [bam.file],
-                    inputBamsIndex = [bam.index],
+                    inputBams = [bamGender.bam],
+                    inputBamsIndex = [bamGender.bamIndex],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
                     gvcf = true,
@@ -184,14 +183,14 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/" + basename(bam.file, ".bam") + ".Y.g.vcf.gz",
+                        outputPath = scatterDir + "/" + basename(bamGender.bam, ".bam") + ".Y.g.vcf.gz",
                         intervalList = [Yregions],
                         ploidy = 1,
                         referenceFasta = referenceFasta,
                         referenceFastaIndex = referenceFastaFai,
                         referenceFastaDict = referenceFastaDict,
-                        inputBams = [bam.file],
-                        inputBamsIndex = [bam.index],
+                        inputBams = [bamGender.bam],
+                        inputBamsIndex = [bamGender.bamIndex],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
                         gvcf = true,
@@ -287,4 +286,10 @@ workflow GatkVariantCalling {
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
     }
+}
+
+struct BamAndGender {
+    File bam
+    File bamIndex
+    String? gender
 }

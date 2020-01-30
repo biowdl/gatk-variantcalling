@@ -1,13 +1,11 @@
 {
   "GatkVariantCalling.bamFilesAndGenders": [
-    {"left": {
-        "file": "tests/data/gender-aware/male.bam",
-        "index":  "tests/data/gender-aware/male.bai"},
-      "right":"male"},
-    {"left": {
-      "file": "tests/data/gender-aware/female.bam",
-      "index":  "tests/data/gender-aware/female.bai"},
-      "right": "female"}
+    {"bam": "tests/data/gender-aware/male.bam",
+     "bamIndex":  "tests/data/gender-aware/male.bai",
+      "gender":"male"},
+    {"bam": "tests/data/gender-aware/female.bam",
+     "bamIndex":  "tests/data/gender-aware/female.bai",
+      "gender":"female"}
   ],
   "GatkVariantCalling.referenceFasta": "tests/data/gender-aware/reference.fasta",
   "GatkVariantCalling.referenceFastaFai": "tests/data/gender-aware/reference.fasta.fai",
