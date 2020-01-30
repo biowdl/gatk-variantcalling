@@ -23,7 +23,7 @@
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
+    -i tests/integration/single_sample_gvcf.json dna-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -70,7 +70,7 @@
     - integration
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
+    -i tests/integration/two_sample_gvcf.json dna-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -88,7 +88,7 @@
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gender_aware.json gatk-variantcalling.wdl
+    -i tests/integration/two_sample_gender_aware.json dna-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -115,7 +115,7 @@
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gender_aware_with_regions.json gatk-variantcalling.wdl
+    -i tests/integration/two_sample_gender_aware_with_regions.json dna-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
