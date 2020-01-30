@@ -31,8 +31,8 @@ workflow Gvcf {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
-        File dbsnpVCF
-        File dbsnpVCFIndex
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
         Map[String, String] dockerImages
     }
 

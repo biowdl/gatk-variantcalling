@@ -33,8 +33,8 @@ workflow GatkRnaVariantCalling {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
-        File dbsnpVCF
-        File dbsnpVCFIndex
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
         File? regions
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
@@ -88,5 +88,25 @@ workflow GatkRnaVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
+    }
+
+    parameter_meta {
+        bam: {description: "Bam file to be genotyped.", category: "required"}
+        bamIndex: {description: "Index (.bai) file of the bam file.", category: "required"}
+        vcfBasename: { description: "The basename of the VCF files that are outputted by the workflow",
+                       category: "common"}
+        referenceFasta: { description: "The reference fasta file", category: "required" }
+        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
+        dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "common"}
+        dbsnpVCFIndex: { description: "Index (.tbi) file for the dbsnp VCF", category: "common"}
+        outputDir: { description: "The directory where the output files should be located", category: "common" }
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+              category: "advanced"}
+        regions: {description: "A bed file describing the regions to operate on.", category: "common"}
+        XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
+        YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
+        dockerImages: { description: "specify which docker images should be used for running this pipeline",
+                        category: "advanced" }
     }
 }
