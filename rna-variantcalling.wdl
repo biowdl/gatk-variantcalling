@@ -20,6 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import "tasks/common.wdl" as common
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
@@ -27,8 +28,7 @@ import "haplotypecaller.wdl" as haplotypecaller
 
 workflow GatkRnaVariantCalling {
     input {
-        Array[File] + bamFiles
-        Array[File] + bamIndexes
+        Array[IndexedBamFile]+ bamFiles
         String outputDir = "."
         String vcfBasename = "multisample"
         File referenceFasta
@@ -64,12 +64,12 @@ workflow GatkRnaVariantCalling {
             # python container.
     }
 
-    scatter (i in range(length(bamFiles))) {
-        String scatterDir = outputDir + "/scatters/" + basename(bamFiles[i], ".bam") + "/"
+    scatter (bam in bamFiles) {
+        String scatterDir = outputDir + "/scatters/" + basename(bam.file, ".bam") + "/"
         call haplotypecaller.Caller as haplotypeCaller {
             input:
-                bam = bamFiles[i],
-                bamIndex = bamIndexes[i],
+                bam = bam.file,
+                bamIndex = bam.index,
                 scatterList = orderedScatters.reorderedScatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,

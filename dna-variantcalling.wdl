@@ -139,14 +139,14 @@ workflow GatkVariantCalling {
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
         Boolean female = (gender == "female" || gender == "f" || gender == "F")
         Boolean unknownGender = !(male || female)
-        String scatterDir = outputDir + "/scatters/" + basename(bamGender.bam, ".bam") + "/"
+        String scatterDir = outputDir + "/scatters/" + basename(bamGender.file, ".bam") + "/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
         call gvcf.Caller as Gvcf {
             input:
-                bam = bamGender.bam,
-                bamIndex = bamGender.bamIndex,
+                bam = bamGender.file,
+                bamIndex = bamGender.index,
                 scatterList = orderedAutosomalScatters.reorderedScatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
@@ -164,15 +164,15 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/" + basename(bamGender.bam, ".bam") + ".X.g.vcf.gz",
+                    outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".X.g.vcf.gz",
                     intervalList = [Xregions],
                     # Females are default.
                     ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
                     referenceFastaIndex = referenceFastaFai,
                     referenceFastaDict = referenceFastaDict,
-                    inputBams = [bamGender.bam],
-                    inputBamsIndex = [bamGender.bamIndex],
+                    inputBams = [bamGender.file],
+                    inputBamsIndex = [bamGender.index],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
                     gvcf = true,
@@ -183,14 +183,14 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/" + basename(bamGender.bam, ".bam") + ".Y.g.vcf.gz",
+                        outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".Y.g.vcf.gz",
                         intervalList = [Yregions],
                         ploidy = 1,
                         referenceFasta = referenceFasta,
                         referenceFastaIndex = referenceFastaFai,
                         referenceFastaDict = referenceFastaDict,
-                        inputBams = [bamGender.bam],
-                        inputBamsIndex = [bamGender.bamIndex],
+                        inputBams = [bamGender.file],
+                        inputBamsIndex = [bamGender.index],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
                         gvcf = true,
@@ -289,7 +289,7 @@ workflow GatkVariantCalling {
 }
 
 struct BamAndGender {
-    File bam
-    File bamIndex
+    File file
+    File index
     String? gender
 }
