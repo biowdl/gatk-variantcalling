@@ -236,8 +236,8 @@ workflow GatkVariantCalling {
 
         call gatk.GenotypeGVCFs as genotypeGvcfs {
             input:
-                gvcfFiles = [gatherGvcfs.outputVcf],
-                gvcfFilesIndex = [gatherGvcfs.outputVcfIndex],
+                gvcfFile = gatherGvcfs.outputVcf,
+                gvcfFileIndex = gatherGvcfs.outputVcfIndex,
                 intervals = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
@@ -268,7 +268,7 @@ workflow GatkVariantCalling {
     }
 
     parameter_meta {
-        bamFilesAndGenders: { description: "List of tuples of BAM files and gender. BAM file to be analysed by GATK. The should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.",
+        bamFilesAndGenders: { description: "List of structs containing,BAM file, BAM index and gender. The BAM should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.",
                             category: "required" }
         vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
                        category: "common"}
