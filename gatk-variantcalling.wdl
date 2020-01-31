@@ -40,6 +40,7 @@ workflow GatkVariantCalling {
         File? XNonParRegions
         File? YNonParRegions
         File? regions
+        Boolean jointgenotyping = true
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -154,7 +155,7 @@ workflow GatkVariantCalling {
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 outputDir = scatterDir,
-                gvcf = true,
+                gvcf = jointgenotyping,
                 dockerImages = dockerImages
         }
 
@@ -175,7 +176,7 @@ workflow GatkVariantCalling {
                     inputBamsIndex = [bamGender.index],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
-                    gvcf = true,
+                    gvcf = jointgenotyping,
                     dockerImage = dockerImages["gatk4"]
             }
 
@@ -193,7 +194,7 @@ workflow GatkVariantCalling {
                         inputBamsIndex = [bamGender.index],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
-                        gvcf = true,
+                        gvcf = jointgenotyping,
                         dockerImage = dockerImages["gatk4"]
                 }
             }
@@ -203,56 +204,58 @@ workflow GatkVariantCalling {
         Array[File] GVCFIndexes = flatten([Gvcf.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
     }
 
-    call gatk.CombineGVCFs as gatherGvcfs {
+    if (jointgenotyping) {
+        call gatk.CombineGVCFs as gatherGvcfs {
+                input:
+                    gvcfFiles = flatten(GVCFs),
+                    gvcfFilesIndex = flatten(GVCFIndexes),
+                    outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
+                    referenceFasta = referenceFasta,
+                    referenceFastaFai = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    dockerImage = dockerImages["gatk4"]
+
+        }
+
+        call biopet.ScatterRegions as scatterAllRegions {
             input:
-                gvcfFiles = flatten(GVCFs),
-                gvcfFilesIndex = flatten(GVCFIndexes),
-                outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
-                referenceFasta = referenceFasta,
-                referenceFastaFai = referenceFastaFai,
-                referenceFastaDict = referenceFastaDict,
-                dockerImage = dockerImages["gatk4"]
-
-    }
-
-    call biopet.ScatterRegions as scatterAllRegions {
-        input:
-            referenceFasta = referenceFasta,
-            referenceFastaDict = referenceFastaDict,
-            scatterSize = scatterSize,
-            regions = regions,
-            dockerImage = dockerImages["biopet-scatterregions"]
-    }
-
-    # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-    call biopet.ReorderGlobbedScatters as orderedAllScatters {
-        input:
-            scatters = scatterAllRegions.scatters
-            # Dockertag not relevant here. Python script always runs in the same
-            # python container.
-    }
-
-    scatter (bed in orderedAllScatters.reorderedScatters) {
-
-        call gatk.GenotypeGVCFs as genotypeGvcfs {
-            input:
-                gvcfFile = gatherGvcfs.outputVcf,
-                gvcfFileIndex = gatherGvcfs.outputVcfIndex,
-                intervals = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
-                referenceFastaFai = referenceFastaFai,
-                outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
-                dbsnpVCF = dbsnpVCF,
-                dbsnpVCFIndex = dbsnpVCFIndex,
-                dockerImage = dockerImages["gatk4"]
+                scatterSize = scatterSize,
+                regions = regions,
+                dockerImage = dockerImages["biopet-scatterregions"]
+        }
+
+        # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
+        call biopet.ReorderGlobbedScatters as orderedAllScatters {
+            input:
+                scatters = scatterAllRegions.scatters
+                # Dockertag not relevant here. Python script always runs in the same
+                # python container.
+        }
+
+        scatter (bed in orderedAllScatters.reorderedScatters) {
+
+            call gatk.GenotypeGVCFs as genotypeGvcfs {
+                input:
+                    gvcfFile = gatherGvcfs.outputVcf,
+                    gvcfFileIndex = gatherGvcfs.outputVcfIndex,
+                    intervals = [bed],
+                    referenceFasta = referenceFasta,
+                    referenceFastaDict = referenceFastaDict,
+                    referenceFastaFai = referenceFastaFai,
+                    outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
+                    dbsnpVCF = dbsnpVCF,
+                    dbsnpVCFIndex = dbsnpVCFIndex,
+                    dockerImage = dockerImages["gatk4"]
+            }
         }
     }
 
     call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVCFs = genotypeGvcfs.outputVCF,
-            inputVCFsIndexes = genotypeGvcfs.outputVCFIndex,
+            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(GVCFs),
+            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(GVCFIndexes),
             outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }

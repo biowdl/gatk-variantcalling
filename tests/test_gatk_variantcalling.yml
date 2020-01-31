@@ -24,7 +24,7 @@
     - dna
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/single_sample_gvcf.json dna-variantcalling.wdl
+    -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -72,7 +72,7 @@
     - dna
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gvcf.json dna-variantcalling.wdl
+    -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -91,7 +91,7 @@
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gender_aware.json dna-variantcalling.wdl
+    -i tests/integration/two_sample_gender_aware.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -119,7 +119,7 @@
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/two_sample_gender_aware_with_regions.json dna-variantcalling.wdl
+    -i tests/integration/two_sample_gender_aware_with_regions.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
@@ -146,10 +146,14 @@
     - rna
   command: >-
     cromwell run -o tests/cromwell_options.json
-    -i tests/integration/rna_sample.json rna-variantcalling.wdl
+    -i tests/integration/rna_sample.json gatk-variantcalling.wdl
   stdout:
     contains:
       - "WorkflowSucceededState"
   files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+      should_exist: false
+    - path: test-output/multisample.g.vcf.gz
+      should_exist: false
     - path: "test-output/multisample.vcf.gz"
     - path: "test-output/multisample.vcf.gz.tbi"

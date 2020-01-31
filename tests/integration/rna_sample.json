@@ -1,10 +1,11 @@
 {
-  "GatkRnaVariantCalling.bamFiles": [{"file":"tests/data/rna3.bam",
+  "GatkVariantCalling.bamFilesAndGenders": [{"file":"tests/data/rna3.bam",
     "index":"tests/data/rna3.bai"}],
-  "GatkRnaVariantCalling.referenceFasta": "tests/data/reference.fasta",
-  "GatkRnaVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
-  "GatkRnaVariantCalling.referenceFastaDict": "tests/data/reference.dict",
-  "GatkRnaVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
-  "GatkRnaVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
-  "GatkRnaVariantCalling.scatterSize": 10000
+  "GatkVariantCalling.referenceFasta": "tests/data/reference.fasta",
+  "GatkVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
+  "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",
+  "GatkVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
+  "GatkVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
+  "GatkVariantCalling.scatterSize": 10000,
+  "GatkVariantCalling.jointgenotyping": false
 }
