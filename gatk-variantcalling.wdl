@@ -286,5 +286,4 @@ struct BamAndGender {
     File file
     File index
     String? gender
-    String? md5sum
 }
