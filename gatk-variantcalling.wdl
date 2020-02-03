@@ -277,6 +277,8 @@ workflow GatkVariantCalling {
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
+        jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
+                          category: "common"}
     }
 }
 
