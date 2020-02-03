@@ -24,7 +24,7 @@ import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "haplotypecaller.wdl" as gvcf
+import "haplotypecaller.wdl" as haplotype_wf
 
 workflow GatkVariantCalling {
     input {
@@ -133,7 +133,7 @@ workflow GatkVariantCalling {
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
-        call gvcf.Caller as Gvcf {
+        call haplotype_wf.Caller as callAutosomal {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
@@ -189,15 +189,15 @@ workflow GatkVariantCalling {
             }
         }
 
-        Array[File] GVCFs = flatten([Gvcf.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
-        Array[File] GVCFIndexes = flatten([Gvcf.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+        Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
+        Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
     }
 
     if (jointgenotyping) {
         call gatk.CombineGVCFs as gatherGvcfs {
                 input:
-                    gvcfFiles = flatten(GVCFs),
-                    gvcfFilesIndex = flatten(GVCFIndexes),
+                    gvcfFiles = flatten(VCFs),
+                    gvcfFilesIndex = flatten(VCFIndexes),
                     outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
                     referenceFasta = referenceFasta,
                     referenceFastaFai = referenceFastaFai,
@@ -243,8 +243,8 @@ workflow GatkVariantCalling {
 
     call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(GVCFs),
-            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(GVCFIndexes),
+            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(VCFs),
+            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(VCFIndexes),
             outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }

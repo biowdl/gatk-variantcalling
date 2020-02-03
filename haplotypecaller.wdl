@@ -40,7 +40,7 @@ workflow Caller {
     String scatterDir = outputDir + "/scatters/"
 
     scatter (bed in scatterList) {
-        call gatk.HaplotypeCaller as haplotypeCallerGvcf {
+        call gatk.HaplotypeCaller as haplotypeCaller {
             input:
                 outputPath = scatterDir + "/" + basename(bed) + ".g.vcf.gz",
                 intervalList = [bed],
@@ -57,8 +57,8 @@ workflow Caller {
     }
 
     output {
-        Array[File] outputVcfs = haplotypeCallerGvcf.outputVCF
-        Array[File] outputVcfsIndex = haplotypeCallerGvcf.outputVCFIndex
+        Array[File] outputVcfs = haplotypeCaller.outputVCF
+        Array[File] outputVcfsIndex = haplotypeCaller.outputVCFIndex
     }
 
     parameter_meta {
