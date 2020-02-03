@@ -21,6 +21,7 @@
 - name: single_sample
   tags:
     - integration
+    - dna
   command: >-
     cromwell run -o tests/cromwell_options.json
     -i tests/integration/single_sample_gvcf.json gatk-variantcalling.wdl
@@ -68,6 +69,7 @@
 - name: two_sample
   tags:
     - integration
+    - dna
   command: >-
     cromwell run -o tests/cromwell_options.json
     -i tests/integration/two_sample_gvcf.json gatk-variantcalling.wdl
@@ -85,6 +87,7 @@
 - name: two_sample_gender_aware
   tags:
     - integration
+    - dna
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
@@ -112,6 +115,7 @@
 - name: two_sample_gender_aware_with_regions
   tags:
     - integration
+    - dna
     - gender-aware
   command: >-
     cromwell run -o tests/cromwell_options.json
@@ -135,3 +139,21 @@
     - path: test-output/intersected_y_non_par_regions.bed
       contains:
         - "Y	5000	8000"
+
+- name: rna_sample
+  tags:
+    - integration
+    - rna
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/rna_sample.json gatk-variantcalling.wdl
+  stdout:
+    contains:
+      - "WorkflowSucceededState"
+  files:
+    - path: test-output/multisample.g.vcf.gz.tbi
+      should_exist: false
+    - path: test-output/multisample.g.vcf.gz
+      should_exist: false
+    - path: "test-output/multisample.vcf.gz"
+    - path: "test-output/multisample.vcf.gz.tbi"

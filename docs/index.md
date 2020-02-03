@@ -28,9 +28,7 @@ For an overview of all available inputs, see [this page](./inputs.html).
   "GatkVariantCalling.referenceFasta": "A reference fasta file",
   "GatkVariantCalling.referenceFastaFai": "The index for the reference fasta",
   "GatkVariantCalling.referenceFastaDict": "The dict file for the reference fasta",
-  "GatkVariantCalling.dbsnpVCF": "A dbSNP VCF file",
-  "GatkVariantCalling.dbsnpVCFIndex": "Index (.tbi) for the dbSNP VCF file",
-  "GatkVariantCalling.bamFilesAndGenders": "A list tuples of bam files, their indexes and the gender of the sample. The gender is optional. " 
+  "GatkVariantCalling.bamFilesAndGenders": "A list of structs. Each struct contains the bam file, the index and the gender of the sample. The gender is optional. " 
  }
 ```
 `gender` can be set to `null`. Actionable values are `female`, `male`, `F`, 
@@ -48,6 +46,8 @@ The following actions are taken for each gender:
 Some additional inputs which may be of interest are:
 ```json
 {
+  "GatkVariantCalling.dbsnpVCF": "A dbSNP VCF file with known variants.",
+  "GatkVariantCalling.dbsnpVCFIndex": "Index (.tbi) for the dbSNP VCF file",
   "GatkVariantCalling.regions": "The path to a bed file containing the regions for which variant calling will be performed",
   "GatkVariantCalling.scatterSize": "The size of scatter regions (see explanation of scattering below), defaults to 10,000,000",
   "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
