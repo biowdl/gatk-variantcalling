@@ -20,7 +20,6 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "tasks/common.wdl" as common
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
@@ -62,38 +61,24 @@ workflow GatkVariantCalling {
                 bedFiles = select_all([XNonParRegions, YNonParRegions]),
                 dockerImage = dockerImages["bedtools"]
         }
-    }
-
-    if (!knownParRegions) {
-        # If we do not know the non-PAR regions we create an empty bed.
-        # Complementing this will simply return all regions.
-        call common.TextToFile as emptyBed {
+        call bedtools.Complement as inverseBed {
             input:
-                text = "",
-                outputFile = "empty.bed"
-        }
-    }
-
-    # Note: When complementing an empty bed autosomalRegions == allRegions
-    call bedtools.Complement as inverseBed {
-        input:
-            inputBed = select_first([mergeBeds.mergedBed, emptyBed.out]),
-            faidx = referenceFastaFai,
-            outputBed = "autosomal_regions.bed",
-            dockerImage = dockerImages["bedtools"]
-    }
-
-    if (defined(regions)) {
-        call bedtools.Intersect as intersectAutosomalRegions {
-            input:
-                regionsA = inverseBed.complementBed,
-                regionsB = select_first([regions]),
+                inputBed = mergeBeds.mergedBed,
                 faidx = referenceFastaFai,
-                outputBed = "intersected_autosomal_regions.bed",
+                outputBed = "autosomal_regions.bed",
                 dockerImage = dockerImages["bedtools"]
         }
 
-        if (knownParRegions) {
+        if (defined(regions)) {
+            call bedtools.Intersect as intersectAutosomalRegions {
+                input:
+                    regionsA = inverseBed.complementBed,
+                    regionsB = select_first([regions]),
+                    faidx = referenceFastaFai,
+                    outputBed = "intersected_autosomal_regions.bed",
+                    dockerImage = dockerImages["bedtools"]
+            }
+
             call bedtools.Intersect as intersectX {
                 input:
                     regionsA = select_first([XNonParRegions]),
@@ -112,18 +97,22 @@ workflow GatkVariantCalling {
                     dockerImage = dockerImages["bedtools"]
             }
         }
+        File Xregions = select_first([intersectX.intersectedBed, XNonParRegions])
+        File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
+        File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
     }
-
-    File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
-    File Xregions = select_first([intersectX.intersectedBed, XNonParRegions, emptyBed.out])
-    File Yregions = select_first([intersectY.intersectedBed, YNonParRegions, emptyBed.out])
 
     call biopet.ScatterRegions as scatterAutosomalRegions {
         input:
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
-            regions = autosomalRegions,
+            # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
+            # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
+            # When there are no non-PAR regions, use the optional regions parameter.
+            regions = if knownParRegions
+                      then select_first([autosomalRegions])
+                      else regions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 
@@ -166,7 +155,7 @@ workflow GatkVariantCalling {
             call gatk.HaplotypeCaller as callX {
                 input:
                     outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".X.g.vcf.gz",
-                    intervalList = [Xregions],
+                    intervalList = select_all([Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
@@ -185,7 +174,7 @@ workflow GatkVariantCalling {
                 call gatk.HaplotypeCaller as callY {
                     input:
                         outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".Y.g.vcf.gz",
-                        intervalList = [Yregions],
+                        intervalList = select_all([Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
                         referenceFastaIndex = referenceFastaFai,
@@ -263,9 +252,9 @@ workflow GatkVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
-        File autosomalRegionsBed = autosomalRegions
-        File xRegionBed = Xregions
-        File yRegionBed = Yregions
+        File? autosomalRegionsBed = autosomalRegions
+        File? xRegionBed = Xregions
+        File? yRegionBed = Yregions
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
