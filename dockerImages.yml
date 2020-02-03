@@ -2,7 +2,6 @@
 
 bedtools: "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
 biopet-scatterregions: "quay.io/biocontainers/biopet-scatterregions:0.2--0"
-debian: "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
 gatk4: "quay.io/biocontainers/gatk4:4.1.0.0--0"
 picard: "quay.io/biocontainers/picard:2.20.5--0"
 python: "python:3.7-slim"

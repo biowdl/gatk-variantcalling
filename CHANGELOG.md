@@ -10,6 +10,9 @@ that users understand how the changes affect the new version.
 -->
 version 2.0.0-dev
 -----------------
++ Make Joint Genotyping by GenotypeGVCF an optional step, so the pipeline can 
+  be used for RNA variant calling.
++ Make using a dbsnp VCF file optional.
 + Added gender-aware capabilities to the pipeline. This has changed the input
   format.
 + Added inputs overview to the docs.

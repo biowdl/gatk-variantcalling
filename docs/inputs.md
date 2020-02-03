@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Inputs
+title: "Inputs: GatkVariantCalling"
 ---
 
 # Inputs for GatkVariantCalling
@@ -13,18 +13,8 @@ GatkVariantCalling.
 <dl>
 <dt id="GatkVariantCalling.bamFilesAndGenders"><a href="#GatkVariantCalling.bamFilesAndGenders">GatkVariantCalling.bamFilesAndGenders</a></dt>
 <dd>
-    <i>Array[Pair[struct(file : File, index : File, md5sum : String?),String?]] </i><br />
-    List of tuples of BAM files and gender. BAM file to be analysed by GATK. The should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.
-</dd>
-<dt id="GatkVariantCalling.dbsnpVCF"><a href="#GatkVariantCalling.dbsnpVCF">GatkVariantCalling.dbsnpVCF</a></dt>
-<dd>
-    <i>File </i><br />
-    dbsnp VCF file used for checking known sites
-</dd>
-<dt id="GatkVariantCalling.dbsnpVCFIndex"><a href="#GatkVariantCalling.dbsnpVCFIndex">GatkVariantCalling.dbsnpVCFIndex</a></dt>
-<dd>
-    <i>File </i><br />
-    Index (.tbi) file for the dbsnp VCF
+    <i>Array[struct(file : File, gender : String?, index : File)] </i><br />
+    List of structs containing,BAM file, BAM index and gender. The BAM should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.
 </dd>
 <dt id="GatkVariantCalling.referenceFasta"><a href="#GatkVariantCalling.referenceFasta">GatkVariantCalling.referenceFasta</a></dt>
 <dd>
@@ -55,6 +45,16 @@ GatkVariantCalling.
     <i>Array[File]+? </i><br />
     Bed files or interval lists describing the regions to NOT operate on.
 </dd>
+<dt id="GatkVariantCalling.dbsnpVCF"><a href="#GatkVariantCalling.dbsnpVCF">GatkVariantCalling.dbsnpVCF</a></dt>
+<dd>
+    <i>File? </i><br />
+    dbsnp VCF file used for checking known sites
+</dd>
+<dt id="GatkVariantCalling.dbsnpVCFIndex"><a href="#GatkVariantCalling.dbsnpVCFIndex">GatkVariantCalling.dbsnpVCFIndex</a></dt>
+<dd>
+    <i>File? </i><br />
+    Index (.tbi) file for the dbsnp VCF
+</dd>
 <dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
 <dd>
     <i>Array[File]+? </i><br />
@@ -64,6 +64,11 @@ GatkVariantCalling.
 <dd>
     <i>Int? </i><br />
     The ploidy with which the variants should be called.
+</dd>
+<dt id="GatkVariantCalling.jointgenotyping"><a href="#GatkVariantCalling.jointgenotyping">GatkVariantCalling.jointgenotyping</a></dt>
+<dd>
+    <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
+    Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not
 </dd>
 <dt id="GatkVariantCalling.outputDir"><a href="#GatkVariantCalling.outputDir">GatkVariantCalling.outputDir</a></dt>
 <dd>
@@ -98,7 +103,7 @@ GatkVariantCalling.
 <dl>
 <dt id="GatkVariantCalling.callX.contamination"><a href="#GatkVariantCalling.callX.contamination">GatkVariantCalling.callX.contamination</a></dt>
 <dd>
-    <i>Float </i><i>&mdash; Default:</i> <code>0.0</code><br />
+    <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
 </dd>
 <dt id="GatkVariantCalling.callX.javaXmx"><a href="#GatkVariantCalling.callX.javaXmx">GatkVariantCalling.callX.javaXmx</a></dt>
@@ -113,7 +118,7 @@ GatkVariantCalling.
 </dd>
 <dt id="GatkVariantCalling.callY.contamination"><a href="#GatkVariantCalling.callY.contamination">GatkVariantCalling.callY.contamination</a></dt>
 <dd>
-    <i>Float </i><i>&mdash; Default:</i> <code>0.0</code><br />
+    <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
 </dd>
 <dt id="GatkVariantCalling.callY.javaXmx"><a href="#GatkVariantCalling.callY.javaXmx">GatkVariantCalling.callY.javaXmx</a></dt>
@@ -130,11 +135,6 @@ GatkVariantCalling.
 <dd>
     <i>Map[String,String] </i><i>&mdash; Default:</i> <code>{"bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3", "picard": "quay.io/biocontainers/picard:2.20.5--0", "gatk4": "quay.io/biocontainers/gatk4:4.1.0.0--0", "biopet-scatterregions": "quay.io/biocontainers/biopet-scatterregions:0.2--0"}</code><br />
     specify which docker images should be used for running this pipeline
-</dd>
-<dt id="GatkVariantCalling.emptyBed.dockerImage"><a href="#GatkVariantCalling.emptyBed.dockerImage">GatkVariantCalling.emptyBed.dockerImage</a></dt>
-<dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"</code><br />
-    The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
 </dd>
 <dt id="GatkVariantCalling.gatherGvcfs.intervals"><a href="#GatkVariantCalling.gatherGvcfs.intervals">GatkVariantCalling.gatherGvcfs.intervals</a></dt>
 <dd>
@@ -161,6 +161,11 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
     The amount of memory this job will use.
 </dd>
+<dt id="GatkVariantCalling.genotypeGvcfs.annotationGroups"><a href="#GatkVariantCalling.genotypeGvcfs.annotationGroups">GatkVariantCalling.genotypeGvcfs.annotationGroups</a></dt>
+<dd>
+    <i>Array[String] </i><i>&mdash; Default:</i> <code>["StandardAnnotation"]</code><br />
+    Which annotation groups will be used for the annotation
+</dd>
 <dt id="GatkVariantCalling.genotypeGvcfs.javaXmx"><a href="#GatkVariantCalling.genotypeGvcfs.javaXmx">GatkVariantCalling.genotypeGvcfs.javaXmx</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"6G"</code><br />
@@ -173,7 +178,7 @@ GatkVariantCalling.
 </dd>
 <dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination</a></dt>
 <dd>
-    <i>Float </i><i>&mdash; Default:</i> <code>0.0</code><br />
+    <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
 </dd>
 <dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx</a></dt>

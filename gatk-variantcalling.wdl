@@ -20,12 +20,11 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "tasks/common.wdl" as common
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "haplotypecaller.wdl" as gvcf
+import "haplotypecaller.wdl" as haplotype_wf
 
 workflow GatkVariantCalling {
     input {
@@ -62,38 +61,24 @@ workflow GatkVariantCalling {
                 bedFiles = select_all([XNonParRegions, YNonParRegions]),
                 dockerImage = dockerImages["bedtools"]
         }
-    }
-
-    if (!knownParRegions) {
-        # If we do not know the non-PAR regions we create an empty bed.
-        # Complementing this will simply return all regions.
-        call common.TextToFile as emptyBed {
+        call bedtools.Complement as inverseBed {
             input:
-                text = "",
-                outputFile = "empty.bed"
-        }
-    }
-
-    # Note: When complementing an empty bed autosomalRegions == allRegions
-    call bedtools.Complement as inverseBed {
-        input:
-            inputBed = select_first([mergeBeds.mergedBed, emptyBed.out]),
-            faidx = referenceFastaFai,
-            outputBed = "autosomal_regions.bed",
-            dockerImage = dockerImages["bedtools"]
-    }
-
-    if (defined(regions)) {
-        call bedtools.Intersect as intersectAutosomalRegions {
-            input:
-                regionsA = inverseBed.complementBed,
-                regionsB = select_first([regions]),
+                inputBed = mergeBeds.mergedBed,
                 faidx = referenceFastaFai,
-                outputBed = "intersected_autosomal_regions.bed",
+                outputBed = "autosomal_regions.bed",
                 dockerImage = dockerImages["bedtools"]
         }
 
-        if (knownParRegions) {
+        if (defined(regions)) {
+            call bedtools.Intersect as intersectAutosomalRegions {
+                input:
+                    regionsA = inverseBed.complementBed,
+                    regionsB = select_first([regions]),
+                    faidx = referenceFastaFai,
+                    outputBed = "intersected_autosomal_regions.bed",
+                    dockerImage = dockerImages["bedtools"]
+            }
+
             call bedtools.Intersect as intersectX {
                 input:
                     regionsA = select_first([XNonParRegions]),
@@ -112,18 +97,22 @@ workflow GatkVariantCalling {
                     dockerImage = dockerImages["bedtools"]
             }
         }
+        File Xregions = select_first([intersectX.intersectedBed, XNonParRegions])
+        File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
+        File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
     }
-
-    File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
-    File Xregions = select_first([intersectX.intersectedBed, XNonParRegions, emptyBed.out])
-    File Yregions = select_first([intersectY.intersectedBed, YNonParRegions, emptyBed.out])
 
     call biopet.ScatterRegions as scatterAutosomalRegions {
         input:
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
-            regions = autosomalRegions,
+            # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
+            # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
+            # When there are no non-PAR regions, use the optional regions parameter.
+            regions = if knownParRegions
+                      then select_first([autosomalRegions])
+                      else regions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 
@@ -144,7 +133,7 @@ workflow GatkVariantCalling {
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
-        call gvcf.Caller as Gvcf {
+        call haplotype_wf.Caller as callAutosomal {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
@@ -166,7 +155,7 @@ workflow GatkVariantCalling {
             call gatk.HaplotypeCaller as callX {
                 input:
                     outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".X.g.vcf.gz",
-                    intervalList = [Xregions],
+                    intervalList = select_all([Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
@@ -185,7 +174,7 @@ workflow GatkVariantCalling {
                 call gatk.HaplotypeCaller as callY {
                     input:
                         outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".Y.g.vcf.gz",
-                        intervalList = [Yregions],
+                        intervalList = select_all([Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
                         referenceFastaIndex = referenceFastaFai,
@@ -200,15 +189,15 @@ workflow GatkVariantCalling {
             }
         }
 
-        Array[File] GVCFs = flatten([Gvcf.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
-        Array[File] GVCFIndexes = flatten([Gvcf.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+        Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
+        Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
     }
 
     if (jointgenotyping) {
         call gatk.CombineGVCFs as gatherGvcfs {
                 input:
-                    gvcfFiles = flatten(GVCFs),
-                    gvcfFilesIndex = flatten(GVCFIndexes),
+                    gvcfFiles = flatten(VCFs),
+                    gvcfFilesIndex = flatten(VCFIndexes),
                     outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
                     referenceFasta = referenceFasta,
                     referenceFastaFai = referenceFastaFai,
@@ -254,8 +243,8 @@ workflow GatkVariantCalling {
 
     call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(GVCFs),
-            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(GVCFIndexes),
+            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(VCFs),
+            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(VCFIndexes),
             outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }
@@ -263,9 +252,9 @@ workflow GatkVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
-        File autosomalRegionsBed = autosomalRegions
-        File xRegionBed = Xregions
-        File yRegionBed = Yregions
+        File? autosomalRegionsBed = autosomalRegions
+        File? xRegionBed = Xregions
+        File? yRegionBed = Yregions
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
@@ -288,6 +277,8 @@ workflow GatkVariantCalling {
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
+        jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
+                          category: "common"}
     }
 }
 
