@@ -286,6 +286,7 @@ workflow GatkVariantCalling {
                         category: "advanced" }
         jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
                           category: "common"}
+        singleSampleGvcf: {description: "Whether to output single-sample gvcfs", category: "common"}
     }
 }
 
