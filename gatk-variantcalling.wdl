@@ -38,6 +38,7 @@ workflow GatkVariantCalling {
         File? dbsnpVCFIndex
         File? XNonParRegions
         File? YNonParRegions
+        File? pedigree
         File? regions
         Boolean jointgenotyping = true
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
@@ -135,6 +136,7 @@ workflow GatkVariantCalling {
                 referenceFastaFai = referenceFastaFai,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                pedigree = pedigree,
                 outputDir = scatterDir,
                 gvcf = jointgenotyping,
                 dockerImages = dockerImages
@@ -157,6 +159,7 @@ workflow GatkVariantCalling {
                     inputBamsIndex = [bamGender.index],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
+                    pedigree = pedigree,
                     gvcf = jointgenotyping,
                     dockerImage = dockerImages["gatk4"]
             }
@@ -175,6 +178,7 @@ workflow GatkVariantCalling {
                         inputBamsIndex = [bamGender.index],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
+                        pedigree = pedigree,
                         gvcf = jointgenotyping,
                         dockerImage = dockerImages["gatk4"]
                 }
@@ -220,6 +224,7 @@ workflow GatkVariantCalling {
                     outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
+                    pedigree = pedigree,
                     dockerImage = dockerImages["gatk4"]
             }
         }
@@ -259,6 +264,7 @@ workflow GatkVariantCalling {
         regions: {description: "A bed file describing the regions to operate on.", category: "common"}
         XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
         jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
