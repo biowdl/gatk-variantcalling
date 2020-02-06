@@ -74,6 +74,7 @@ workflow Caller {
         dbsnpVCFIndex: {description: "The index (.tbi) file for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         outputDir: {description: "The directory where the output files should be located.", category: "common"}
+        gvcf: {description: "Whether the haplotypecaller should be called in GVCF mode.", category: "common"}
         dockerImages: {description: "A map with docker images to use.", category: "required"}
     }
 }
