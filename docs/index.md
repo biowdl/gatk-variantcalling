@@ -53,10 +53,17 @@ Some additional inputs which may be of interest are:
   "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
   "GatkVariantCalling.XNonParRergions": "Bed file with the non-PAR regions of X. Required for gender-aware variant calling.",
   "GatkVariantCalling.YNonParRegions": "Bed file with the non-PAR regions of Y. Required for gender-aware variant calling."
+  "GatkVariantCalling.pedigree": "Pedigree file that can be used for family-aware variantcalling.", 
+  "GatkVariantCalling.singleSampleGvcf": "Output Gvcfs for every single sample."
 }
 ```
 When the X and Y non-PAR regions are not both provided, GATK will call all 
 chromosomes with ploidy 2 naively. 
+
+By default GVCFs are not created for every single sample as it requires a lot
+of extra space and write actions. If the option to output single sample GVCFs
+is turned on, this will happen in parallel with the creation of the multisample
+GVCF file.
 
 An output directory can be set using an `options.json` file. See [the
 cromwell documentation](
@@ -90,18 +97,15 @@ need a custom configuration to allow this.
   "GatkVariantCalling.YNonParRegions": "/home/user/genomes/human/y_non_par.bed",
   "GatkVariantCalling.outputDir": "/home/user/analysis/results/",
   "GatkVariantCalling.bamFilesAndGenders": [
-    {"left": {
-        "file": "/home/user/mapping/results/s1_1.bam",
-        "index":  "/home/user/mapping/results/s1_1.bai"},
-      "right":"male"},
-    {"left": {
-      "file": "/home/user/mapping/results/s1_2.bam",
-      "index":  "/home/user/mapping/results/s1_2.bai"},
-      "right": "female"},
-   {"left": {
-      "file": "/home/user/mapping/results/s1_3.bam",
-      "index":  "/home/user/mapping/results/s1_3.bai"},
-      "right": null}
+    {"file": "/home/user/mapping/results/s1_1.bam",
+     "index":  "/home/user/mapping/results/s1_1.bai",
+     "gender":"male"},
+    {"file": "/home/user/mapping/results/s1_2.bam",
+     "index": "/home/user/mapping/results/s1_2.bai",
+     "gender": "female"},
+    {"file": "/home/user/mapping/results/s1_3.bam",
+     "index":  "/home/user/mapping/results/s1_3.bai",
+     "gender": null}
    ]
 }
 ```
