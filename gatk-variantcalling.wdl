@@ -116,14 +116,6 @@ workflow GatkVariantCalling {
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 
-    # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-    call biopet.ReorderGlobbedScatters as orderedAutosomalScatters {
-        input:
-            scatters = scatterAutosomalRegions.scatters
-            # Dockertag not relevant here. Python script always runs in the same
-            # python container.
-    }
-
     scatter (bamGender in bamFilesAndGenders) {
         String gender = select_first([bamGender.gender, "unknown"])
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
@@ -137,7 +129,7 @@ workflow GatkVariantCalling {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
-                scatterList = orderedAutosomalScatters.reorderedScatters,
+                scatterList = scatterAutosomalRegions.scatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
@@ -215,15 +207,7 @@ workflow GatkVariantCalling {
                 dockerImage = dockerImages["biopet-scatterregions"]
         }
 
-        # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-        call biopet.ReorderGlobbedScatters as orderedAllScatters {
-            input:
-                scatters = scatterAllRegions.scatters
-                # Dockertag not relevant here. Python script always runs in the same
-                # python container.
-        }
-
-        scatter (bed in orderedAllScatters.reorderedScatters) {
+        scatter (bed in scatterAllRegions.scatters) {
 
             call gatk.GenotypeGVCFs as genotypeGvcfs {
                 input:
