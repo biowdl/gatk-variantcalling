@@ -96,6 +96,10 @@
     contains:
       - "WorkflowSucceededState"
   files:
+    - path: test-output/samples/male.g.vcf.gz
+    - path: test-output/samples/male.g.vcf.gz.tbi
+    - path: test-output/samples/female.g.vcf.gz
+    - path: test-output/samples/female.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
     - path: test-output/multisample.vcf.gz
@@ -157,3 +161,11 @@
       should_exist: false
     - path: "test-output/multisample.vcf.gz"
     - path: "test-output/multisample.vcf.gz.tbi"
+    - path: test-output/samples/male.g.vcf.gz
+      should_exist: false
+    - path: test-output/samples/male.g.vcf.gz.tbi
+      should_exist: false
+    - path: test-output/samples/female.g.vcf.gz
+      should_exist: false
+    - path: test-output/samples/female.g.vcf.gz.tbi
+      should_exist: false

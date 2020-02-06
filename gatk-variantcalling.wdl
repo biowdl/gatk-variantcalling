@@ -41,6 +41,7 @@ workflow GatkVariantCalling {
         File? pedigree
         File? regions
         Boolean jointgenotyping = true
+        Boolean singleSampleGvcf = true
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -119,10 +120,11 @@ workflow GatkVariantCalling {
 
     scatter (bamGender in bamFilesAndGenders) {
         String gender = select_first([bamGender.gender, "unknown"])
+        String sampleName = basename(bamGender.file, ".bam")
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
         Boolean female = (gender == "female" || gender == "f" || gender == "F")
         Boolean unknownGender = !(male || female)
-        String scatterDir = outputDir + "/scatters/" + basename(bamGender.file, ".bam") + "/"
+        String scatterDir = outputDir + "/samples/scatters/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
@@ -148,7 +150,7 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".X.g.vcf.gz",
+                    outputPath = scatterDir + "/" + sampleName + ".X.g.vcf.gz",
                     intervalList = select_all([Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
@@ -168,7 +170,7 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".Y.g.vcf.gz",
+                        outputPath = scatterDir + "/" + sampleName + ".Y.g.vcf.gz",
                         intervalList = select_all([Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
@@ -187,6 +189,19 @@ workflow GatkVariantCalling {
 
         Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
         Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+
+        if (singleSampleGvcf && jointgenotyping) {
+            call gatk.CombineGVCFs as mergeSingleSample {
+                input:
+                    gvcfFiles = VCFs,
+                    gvcfFilesIndex = VCFIndexes,
+                    outputPath = outputDir + "/samples/" + sampleName + ".g.vcf.gz",
+                    referenceFasta = referenceFasta,
+                    referenceFastaFai = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    dockerImage = dockerImages["gatk4"]
+            }
+        }
     }
 
     if (jointgenotyping) {
@@ -241,6 +256,8 @@ workflow GatkVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
+        Array[File] singleSampleGvcfs = select_all(mergeSingleSample.outputVcf)
+        Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSample.outputVcfIndex)
         File? autosomalRegionsBed = autosomalRegions
         File? xRegionBed = Xregions
         File? yRegionBed = Yregions
