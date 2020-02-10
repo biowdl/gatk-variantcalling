@@ -35,6 +35,16 @@ GatkVariantCalling.
 
 ## Other common inputs
 <dl>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.excludeIntervalList"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.excludeIntervalList">GatkVariantCalling.callAutosomal.haplotypeCaller.excludeIntervalList</a></dt>
+<dd>
+    <i>Array[File]+? </i><br />
+    Bed files or interval lists describing the regions to NOT operate on.
+</dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy">GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy</a></dt>
+<dd>
+    <i>Int? </i><br />
+    The ploidy with which the variants should be called.
+</dd>
 <dt id="GatkVariantCalling.callX.excludeIntervalList"><a href="#GatkVariantCalling.callX.excludeIntervalList">GatkVariantCalling.callX.excludeIntervalList</a></dt>
 <dd>
     <i>Array[File]+? </i><br />
@@ -55,16 +65,6 @@ GatkVariantCalling.
     <i>File? </i><br />
     Index (.tbi) file for the dbsnp VCF
 </dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.excludeIntervalList</a></dt>
-<dd>
-    <i>Array[File]+? </i><br />
-    Bed files or interval lists describing the regions to NOT operate on.
-</dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.ploidy</a></dt>
-<dd>
-    <i>Int? </i><br />
-    The ploidy with which the variants should be called.
-</dd>
 <dt id="GatkVariantCalling.jointgenotyping"><a href="#GatkVariantCalling.jointgenotyping">GatkVariantCalling.jointgenotyping</a></dt>
 <dd>
     <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
@@ -75,10 +75,20 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"."</code><br />
     The directory where the output files should be located
 </dd>
+<dt id="GatkVariantCalling.pedigree"><a href="#GatkVariantCalling.pedigree">GatkVariantCalling.pedigree</a></dt>
+<dd>
+    <i>File? </i><br />
+    Pedigree file for determining the population "founders"
+</dd>
 <dt id="GatkVariantCalling.regions"><a href="#GatkVariantCalling.regions">GatkVariantCalling.regions</a></dt>
 <dd>
     <i>File? </i><br />
     A bed file describing the regions to operate on.
+</dd>
+<dt id="GatkVariantCalling.singleSampleGvcf"><a href="#GatkVariantCalling.singleSampleGvcf">GatkVariantCalling.singleSampleGvcf</a></dt>
+<dd>
+    <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
+    Whether to output single-sample gvcfs
 </dd>
 <dt id="GatkVariantCalling.vcfBasename"><a href="#GatkVariantCalling.vcfBasename">GatkVariantCalling.vcfBasename</a></dt>
 <dd>
@@ -101,6 +111,21 @@ GatkVariantCalling.
 <details>
 <summary> Show/Hide </summary>
 <dl>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.contamination"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.contamination">GatkVariantCalling.callAutosomal.haplotypeCaller.contamination</a></dt>
+<dd>
+    <i>Float? </i><br />
+    Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx">GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"4G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.memory"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.memory">GatkVariantCalling.callAutosomal.haplotypeCaller.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
+    The amount of memory this job will use.
+</dd>
 <dt id="GatkVariantCalling.callX.contamination"><a href="#GatkVariantCalling.callX.contamination">GatkVariantCalling.callX.contamination</a></dt>
 <dd>
     <i>Float? </i><br />
@@ -176,35 +201,25 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"18G"</code><br />
     The amount of memory this job will use.
 </dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.contamination</a></dt>
-<dd>
-    <i>Float? </i><br />
-    Equivalent to HaplotypeCaller's `-contamination` option.
-</dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.javaXmx</a></dt>
-<dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"4G"</code><br />
-    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
-</dd>
-<dt id="GatkVariantCalling.Gvcf.haplotypeCallerGvcf.memory"><a href="#GatkVariantCalling.Gvcf.haplotypeCallerGvcf.memory">GatkVariantCalling.Gvcf.haplotypeCallerGvcf.memory</a></dt>
-<dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
-    The amount of memory this job will use.
-</dd>
 <dt id="GatkVariantCalling.mergeBeds.outputBed"><a href="#GatkVariantCalling.mergeBeds.outputBed">GatkVariantCalling.mergeBeds.outputBed</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"merged.bed"</code><br />
     The path to write the output to
 </dd>
-<dt id="GatkVariantCalling.orderedAllScatters.dockerImage"><a href="#GatkVariantCalling.orderedAllScatters.dockerImage">GatkVariantCalling.orderedAllScatters.dockerImage</a></dt>
+<dt id="GatkVariantCalling.mergeSingleSample.intervals"><a href="#GatkVariantCalling.mergeSingleSample.intervals">GatkVariantCalling.mergeSingleSample.intervals</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"python:3.7-slim"</code><br />
-    The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
+    <i>Array[File] </i><i>&mdash; Default:</i> <code>[]</code><br />
+    Bed files or interval lists describing the regions to operate on.
 </dd>
-<dt id="GatkVariantCalling.orderedAutosomalScatters.dockerImage"><a href="#GatkVariantCalling.orderedAutosomalScatters.dockerImage">GatkVariantCalling.orderedAutosomalScatters.dockerImage</a></dt>
+<dt id="GatkVariantCalling.mergeSingleSample.javaXmx"><a href="#GatkVariantCalling.mergeSingleSample.javaXmx">GatkVariantCalling.mergeSingleSample.javaXmx</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"python:3.7-slim"</code><br />
-    The docker image used for this task. Changing this may result in errors which the developers may choose not to address.
+    <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.mergeSingleSample.memory"><a href="#GatkVariantCalling.mergeSingleSample.memory">GatkVariantCalling.mergeSingleSample.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
+    The amount of memory this job will use.
 </dd>
 <dt id="GatkVariantCalling.scatterAllRegions.bamFile"><a href="#GatkVariantCalling.scatterAllRegions.bamFile">GatkVariantCalling.scatterAllRegions.bamFile</a></dt>
 <dd>

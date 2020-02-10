@@ -38,8 +38,10 @@ workflow GatkVariantCalling {
         File? dbsnpVCFIndex
         File? XNonParRegions
         File? YNonParRegions
+        File? pedigree
         File? regions
         Boolean jointgenotyping = true
+        Boolean singleSampleGvcf = true
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -116,20 +118,13 @@ workflow GatkVariantCalling {
             dockerImage = dockerImages["biopet-scatterregions"]
     }
 
-    # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-    call biopet.ReorderGlobbedScatters as orderedAutosomalScatters {
-        input:
-            scatters = scatterAutosomalRegions.scatters
-            # Dockertag not relevant here. Python script always runs in the same
-            # python container.
-    }
-
     scatter (bamGender in bamFilesAndGenders) {
         String gender = select_first([bamGender.gender, "unknown"])
+        String sampleName = basename(bamGender.file, ".bam")
         Boolean male = (gender == "male" || gender == "m" || gender == "M")
         Boolean female = (gender == "female" || gender == "f" || gender == "F")
         Boolean unknownGender = !(male || female)
-        String scatterDir = outputDir + "/scatters/" + basename(bamGender.file, ".bam") + "/"
+        String scatterDir = outputDir + "/samples/scatters/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
@@ -137,12 +132,13 @@ workflow GatkVariantCalling {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
-                scatterList = orderedAutosomalScatters.reorderedScatters,
+                scatterList = scatterAutosomalRegions.scatters,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                pedigree = pedigree,
                 outputDir = scatterDir,
                 gvcf = jointgenotyping,
                 dockerImages = dockerImages
@@ -154,7 +150,7 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".X.g.vcf.gz",
+                    outputPath = scatterDir + "/" + sampleName + ".X.g.vcf.gz",
                     intervalList = select_all([Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
@@ -165,6 +161,7 @@ workflow GatkVariantCalling {
                     inputBamsIndex = [bamGender.index],
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
+                    pedigree = pedigree,
                     gvcf = jointgenotyping,
                     dockerImage = dockerImages["gatk4"]
             }
@@ -173,7 +170,7 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/" + basename(bamGender.file, ".bam") + ".Y.g.vcf.gz",
+                        outputPath = scatterDir + "/" + sampleName + ".Y.g.vcf.gz",
                         intervalList = select_all([Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
@@ -183,6 +180,7 @@ workflow GatkVariantCalling {
                         inputBamsIndex = [bamGender.index],
                         dbsnpVCF = dbsnpVCF,
                         dbsnpVCFIndex = dbsnpVCFIndex,
+                        pedigree = pedigree,
                         gvcf = jointgenotyping,
                         dockerImage = dockerImages["gatk4"]
                 }
@@ -191,6 +189,19 @@ workflow GatkVariantCalling {
 
         Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
         Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+
+        if (singleSampleGvcf && jointgenotyping) {
+            call gatk.CombineGVCFs as mergeSingleSample {
+                input:
+                    gvcfFiles = VCFs,
+                    gvcfFilesIndex = VCFIndexes,
+                    outputPath = outputDir + "/samples/" + sampleName + ".g.vcf.gz",
+                    referenceFasta = referenceFasta,
+                    referenceFastaFai = referenceFastaFai,
+                    referenceFastaDict = referenceFastaDict,
+                    dockerImage = dockerImages["gatk4"]
+            }
+        }
     }
 
     if (jointgenotyping) {
@@ -215,15 +226,7 @@ workflow GatkVariantCalling {
                 dockerImage = dockerImages["biopet-scatterregions"]
         }
 
-        # Glob messes with order of scatters (10 comes before 1), which causes problems at gatherGvcfs
-        call biopet.ReorderGlobbedScatters as orderedAllScatters {
-            input:
-                scatters = scatterAllRegions.scatters
-                # Dockertag not relevant here. Python script always runs in the same
-                # python container.
-        }
-
-        scatter (bed in orderedAllScatters.reorderedScatters) {
+        scatter (bed in scatterAllRegions.scatters) {
 
             call gatk.GenotypeGVCFs as genotypeGvcfs {
                 input:
@@ -236,6 +239,7 @@ workflow GatkVariantCalling {
                     outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
+                    pedigree = pedigree,
                     dockerImage = dockerImages["gatk4"]
             }
         }
@@ -252,6 +256,8 @@ workflow GatkVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
+        Array[File] singleSampleGvcfs = select_all(mergeSingleSample.outputVcf)
+        Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSample.outputVcfIndex)
         File? autosomalRegionsBed = autosomalRegions
         File? xRegionBed = Xregions
         File? yRegionBed = Yregions
@@ -275,10 +281,12 @@ workflow GatkVariantCalling {
         regions: {description: "A bed file describing the regions to operate on.", category: "common"}
         XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
         jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
                           category: "common"}
+        singleSampleGvcf: {description: "Whether to output single-sample gvcfs", category: "common"}
     }
 }
 
