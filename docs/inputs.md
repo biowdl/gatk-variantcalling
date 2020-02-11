@@ -40,6 +40,11 @@ GatkVariantCalling.
     <i>Array[File]+? </i><br />
     Bed files or interval lists describing the regions to NOT operate on.
 </dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.pedigree"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.pedigree">GatkVariantCalling.callAutosomal.haplotypeCaller.pedigree</a></dt>
+<dd>
+    <i>File? </i><br />
+    Pedigree file for determining the population "founders"
+</dd>
 <dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy">GatkVariantCalling.callAutosomal.haplotypeCaller.ploidy</a></dt>
 <dd>
     <i>Int? </i><br />
@@ -50,10 +55,20 @@ GatkVariantCalling.
     <i>Array[File]+? </i><br />
     Bed files or interval lists describing the regions to NOT operate on.
 </dd>
+<dt id="GatkVariantCalling.callX.pedigree"><a href="#GatkVariantCalling.callX.pedigree">GatkVariantCalling.callX.pedigree</a></dt>
+<dd>
+    <i>File? </i><br />
+    Pedigree file for determining the population "founders"
+</dd>
 <dt id="GatkVariantCalling.callY.excludeIntervalList"><a href="#GatkVariantCalling.callY.excludeIntervalList">GatkVariantCalling.callY.excludeIntervalList</a></dt>
 <dd>
     <i>Array[File]+? </i><br />
     Bed files or interval lists describing the regions to NOT operate on.
+</dd>
+<dt id="GatkVariantCalling.callY.pedigree"><a href="#GatkVariantCalling.callY.pedigree">GatkVariantCalling.callY.pedigree</a></dt>
+<dd>
+    <i>File? </i><br />
+    Pedigree file for determining the population "founders"
 </dd>
 <dt id="GatkVariantCalling.dbsnpVCF"><a href="#GatkVariantCalling.dbsnpVCF">GatkVariantCalling.dbsnpVCF</a></dt>
 <dd>
@@ -65,6 +80,11 @@ GatkVariantCalling.
     <i>File? </i><br />
     Index (.tbi) file for the dbsnp VCF
 </dd>
+<dt id="GatkVariantCalling.genotypeGvcfs.pedigree"><a href="#GatkVariantCalling.genotypeGvcfs.pedigree">GatkVariantCalling.genotypeGvcfs.pedigree</a></dt>
+<dd>
+    <i>File? </i><br />
+    Pedigree file for determining the population "founders"
+</dd>
 <dt id="GatkVariantCalling.jointgenotyping"><a href="#GatkVariantCalling.jointgenotyping">GatkVariantCalling.jointgenotyping</a></dt>
 <dd>
     <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
@@ -74,11 +94,6 @@ GatkVariantCalling.
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"."</code><br />
     The directory where the output files should be located
-</dd>
-<dt id="GatkVariantCalling.pedigree"><a href="#GatkVariantCalling.pedigree">GatkVariantCalling.pedigree</a></dt>
-<dd>
-    <i>File? </i><br />
-    Pedigree file for determining the population "founders"
 </dd>
 <dt id="GatkVariantCalling.regions"><a href="#GatkVariantCalling.regions">GatkVariantCalling.regions</a></dt>
 <dd>

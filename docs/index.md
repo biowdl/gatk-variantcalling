@@ -53,7 +53,6 @@ Some additional inputs which may be of interest are:
   "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
   "GatkVariantCalling.XNonParRergions": "Bed file with the non-PAR regions of X. Required for gender-aware variant calling.",
   "GatkVariantCalling.YNonParRegions": "Bed file with the non-PAR regions of Y. Required for gender-aware variant calling.",
-  "GatkVariantCalling.pedigree": "Pedigree file that can be used for family-aware variantcalling.", 
   "GatkVariantCalling.singleSampleGvcf": "Output Gvcfs for every single sample."
 }
 ```
