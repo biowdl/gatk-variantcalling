@@ -37,12 +37,10 @@ workflow Caller {
         Map[String, String] dockerImages
     }
 
-    String scatterDir = outputDir + "/scatters/"
-
     scatter (bed in scatterList) {
         call gatk.HaplotypeCaller as haplotypeCaller {
             input:
-                outputPath = scatterDir + "/" + basename(bed) + ".g.vcf.gz",
+                outputPath = outputDir + "/" + basename(bed) + ".g.vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
