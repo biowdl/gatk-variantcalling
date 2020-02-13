@@ -148,7 +148,7 @@ workflow GatkVariantCalling {
             # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
             call gatk.HaplotypeCaller as callX {
                 input:
-                    outputPath = scatterDir + "/X.g.vcf.gz",
+                    outputPath = if (jointgenotyping) then scatterDir + "/X.g.vcf.gz" else scatterDir + "/X.vcf.gz",
                     intervalList = select_all([Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
@@ -167,7 +167,7 @@ workflow GatkVariantCalling {
             if (male || unknownGender) {
                 call gatk.HaplotypeCaller as callY {
                     input:
-                        outputPath = scatterDir + "/Y.g.vcf.gz",
+                        outputPath = if (jointgenotyping) then scatterDir + "/Y.g.vcf.gz" else scatterDir + "/Y.vcf.gz",
                         intervalList = select_all([Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
@@ -187,7 +187,7 @@ workflow GatkVariantCalling {
         Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
 
         if (singleSampleGvcf && jointgenotyping) {
-            call gatk.CombineGVCFs as mergeSingleSample {
+            call gatk.CombineGVCFs as mergeSingleSampleGvcf {
                 input:
                     gvcfFiles = VCFs,
                     gvcfFilesIndex = VCFIndexes,
@@ -196,6 +196,15 @@ workflow GatkVariantCalling {
                     referenceFastaFai = referenceFastaFai,
                     referenceFastaDict = referenceFastaDict,
                     dockerImage = dockerImages["gatk4"]
+            }
+        }
+        if (!jointgenotyping) {
+            call picard.MergeVCFs as mergeSingleSampleVcf {
+                input:
+                    inputVCFs = VCFs,
+                    inputVCFsIndexes = VCFIndexes,
+                    outputVcfPath = outputDir + "/samples/" + sampleName + ".vcf.gz",
+                    dockerImage = dockerImages["picard"]
             }
         }
     }
@@ -242,8 +251,8 @@ workflow GatkVariantCalling {
 
     call picard.MergeVCFs as gatherVcfs {
         input:
-            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else flatten(VCFs),
-            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else flatten(VCFIndexes),
+            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else select_all(mergeSingleSampleVcf.outputVcf),
+            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else select_all(mergeSingleSampleVcf.outputVcfIndex),
             outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
             dockerImage = dockerImages["picard"]
     }
@@ -251,8 +260,10 @@ workflow GatkVariantCalling {
     output {
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
-        Array[File] singleSampleGvcfs = select_all(mergeSingleSample.outputVcf)
-        Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSample.outputVcfIndex)
+        Array[File] singleSampleGvcfs = select_all(mergeSingleSampleGvcf.outputVcf)
+        Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSampleGvcf.outputVcfIndex)
+        Array[File] singleSampleVcfs = select_all(mergeSingleSampleVcf.outputVcf)
+        Array[File] singleSampleVcfsIndex = select_all(mergeSingleSampleVcf.outputVcfIndex)
         File? autosomalRegionsBed = autosomalRegions
         File? xRegionBed = Xregions
         File? yRegionBed = Yregions

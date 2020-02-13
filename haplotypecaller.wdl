@@ -38,9 +38,10 @@ workflow Caller {
     }
 
     scatter (bed in scatterList) {
+        String name = outputDir + "/" + basename(bed) + if (gvcf) then ".g" else ""
         call gatk.HaplotypeCaller as haplotypeCaller {
             input:
-                outputPath = outputDir + "/" + basename(bed) + ".g.vcf.gz",
+                outputPath = name + ".vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
