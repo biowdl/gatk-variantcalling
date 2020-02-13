@@ -262,7 +262,7 @@ workflow GatkVariantCalling {
     call samtools.Tabix as tabix {
         input:
             inputFile = normalize.outputVcf,
-            outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz"
+            outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.indexed.vcf.gz"
     }
 
     output {
