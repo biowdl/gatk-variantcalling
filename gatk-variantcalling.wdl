@@ -25,6 +25,7 @@ import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "haplotypecaller.wdl" as haplotype_wf
+import "tasks/vt.wdl" as vt
 
 workflow GatkVariantCalling {
     input {
@@ -248,7 +249,17 @@ workflow GatkVariantCalling {
             dockerImage = dockerImages["picard"]
     }
 
+    call vt.Normalize as normalize {
+        input:
+            inputVCF = gatherVcfs.outputVcf,
+            inputVCFIndex = gatherVcfs.outputVcfIndex,
+            referenceFasta = referenceFasta,
+            referenceFastaFai = referenceFastaFai,
+            outputPath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz",
+    }
+
     output {
+        File outputVcfNormalizedDecomposed = normalize.outputVcf
         File outputVcf = gatherVcfs.outputVcf
         File outputVcfIndex = gatherVcfs.outputVcfIndex
         Array[File] singleSampleGvcfs = select_all(mergeSingleSample.outputVcf)
