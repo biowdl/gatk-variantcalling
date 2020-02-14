@@ -160,5 +160,6 @@
     - path: test-output/multisample.g.vcf.gz
       should_exist: false
     - path: "test-output/multisample.vcf.gz"
+      should_exist: false
     - path: "test-output/samples/rna3.vcf.gz"
     - path: "test-output/samples/rna4.vcf.gz"
