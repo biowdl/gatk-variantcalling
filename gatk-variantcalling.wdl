@@ -40,7 +40,7 @@ workflow GatkVariantCalling {
         File? YNonParRegions
         File? regions
         Boolean jointgenotyping = true
-        Boolean singleSampleGvcf = true
+        Boolean singleSampleGvcf = false
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -247,19 +247,19 @@ workflow GatkVariantCalling {
                     dockerImage = dockerImages["gatk4"]
             }
         }
-    }
 
-    call picard.MergeVCFs as gatherVcfs {
-        input:
-            inputVCFs = if jointgenotyping then select_first([genotypeGvcfs.outputVCF]) else select_all(mergeSingleSampleVcf.outputVcf),
-            inputVCFsIndexes = if jointgenotyping then select_first([genotypeGvcfs.outputVCFIndex]) else select_all(mergeSingleSampleVcf.outputVcfIndex),
-            outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
-            dockerImage = dockerImages["picard"]
+        call picard.MergeVCFs as gatherVcfs {
+            input:
+                inputVCFs = genotypeGvcfs.outputVCF,
+                inputVCFsIndexes = genotypeGvcfs.outputVCFIndex,
+                outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
+                dockerImage = dockerImages["picard"]
+        }
     }
 
     output {
-        File outputVcf = gatherVcfs.outputVcf
-        File outputVcfIndex = gatherVcfs.outputVcfIndex
+        File? outputVcf = gatherVcfs.outputVcf
+        File? outputVcfIndex = gatherVcfs.outputVcfIndex
         Array[File] singleSampleGvcfs = select_all(mergeSingleSampleGvcf.outputVcf)
         Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSampleGvcf.outputVcfIndex)
         Array[File] singleSampleVcfs = select_all(mergeSingleSampleVcf.outputVcf)
