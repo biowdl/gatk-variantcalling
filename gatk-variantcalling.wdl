@@ -25,6 +25,8 @@ import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "haplotypecaller.wdl" as haplotype_wf
+import "tasks/vt.wdl" as vt
+import "tasks/samtools.wdl" as samtools
 
 workflow GatkVariantCalling {
     input {
@@ -248,9 +250,24 @@ workflow GatkVariantCalling {
             dockerImage = dockerImages["picard"]
     }
 
+    call vt.Normalize as normalize {
+        input:
+            inputVCF = gatherVcfs.outputVcf,
+            inputVCFIndex = gatherVcfs.outputVcfIndex,
+            referenceFasta = referenceFasta,
+            referenceFastaFai = referenceFastaFai,
+            outputPath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz",
+    }
+
+    call samtools.Tabix as tabix {
+        input:
+            inputFile = normalize.outputVcf,
+            outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.indexed.vcf.gz"
+    }
+
     output {
-        File outputVcf = gatherVcfs.outputVcf
-        File outputVcfIndex = gatherVcfs.outputVcfIndex
+        File outputVcf = tabix.indexedFile
+        File outputVcfIndex = tabix.index
         Array[File] singleSampleGvcfs = select_all(mergeSingleSample.outputVcf)
         Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSample.outputVcfIndex)
         File? autosomalRegionsBed = autosomalRegions

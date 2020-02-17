@@ -62,9 +62,9 @@
         - "chr1	14000	.	A	C"
         - "chr1	14500	.	A	G"
         - "chr1	15000	.	T	G"
-    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.vcf.gz.tbi
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
 
 - name: two_sample
   tags:
@@ -80,9 +80,9 @@
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.vcf.gz.tbi
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
 
 - name: two_sample_gender_aware
   tags:
@@ -102,8 +102,8 @@
     - path: test-output/samples/female.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
-    - path: test-output/multisample.vcf.gz
-    - path: test-output/multisample.vcf.gz.tbi
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
     - path: test-output/autosomal_regions.bed
       contains:
         - "22	0	10000"
@@ -130,8 +130,8 @@
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
-    - path: test-output/multisample.vcf.gz
-    - path: test-output/multisample.vcf.gz.tbi
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
     - path: test-output/intersected_autosomal_regions.bed
       contains:
         - "22	2000	8000"
@@ -159,8 +159,8 @@
       should_exist: false
     - path: test-output/multisample.g.vcf.gz
       should_exist: false
-    - path: "test-output/multisample.vcf.gz"
-    - path: "test-output/multisample.vcf.gz.tbi"
+    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz"
+    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi"
     - path: test-output/samples/male.g.vcf.gz
       should_exist: false
     - path: test-output/samples/male.g.vcf.gz.tbi
