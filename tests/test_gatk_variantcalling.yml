@@ -159,8 +159,8 @@
       should_exist: false
     - path: test-output/multisample.g.vcf.gz
       should_exist: false
-    - path: "test-output/multisample.vcf.gz"
-    - path: "test-output/multisample.vcf.gz.tbi"
+    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz"
+    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi"
     - path: test-output/samples/male.g.vcf.gz
       should_exist: false
     - path: test-output/samples/male.g.vcf.gz.tbi
