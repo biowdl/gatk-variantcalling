@@ -10,7 +10,8 @@ that users understand how the changes affect the new version.
 -->
 version 2.0.0-dev
 -----------------
-+ Add vt task for normalization and decomposition of multi-allelic variants 
++ Multisample VCFs are only produced when joint genotyping is used.
++ Add vt task for optional normalization and decomposition of multi-allelic variants 
 + Add option to output single-sample GVCFs
 + Make Joint Genotyping by GenotypeGVCF an optional step, so the pipeline can 
   be used for RNA variant calling.
