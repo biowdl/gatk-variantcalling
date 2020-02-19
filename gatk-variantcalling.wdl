@@ -58,7 +58,7 @@ workflow GatkVariantCalling {
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
 
     if (knownParRegions) {
-        call calc.CalculateAutosomalRegions as calculateRegions {
+        call calc.CalculateRegions as calculateRegions {
             input:
                 referenceFastaFai = referenceFastaFai,
                 XNonParRegions = select_first([XNonParRegions]),

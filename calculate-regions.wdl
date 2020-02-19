@@ -21,7 +21,7 @@ version 1.0
 # SOFTWARE.
 import "tasks/bedtools.wdl" as bedtools
 
-workflow CalculateAutosomalRegions {
+workflow CalculateRegions {
     input {
         File referenceFastaFai
         File XNonParRegions
