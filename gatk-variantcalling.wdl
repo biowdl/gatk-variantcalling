@@ -21,10 +21,10 @@ version 1.0
 # SOFTWARE.
 
 import "tasks/biopet/biopet.wdl" as biopet
-import "tasks/bedtools.wdl" as bedtools
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "haplotypecaller.wdl" as haplotype_wf
+import "calculate-regions.wdl" as calc
 import "tasks/vt.wdl" as vt
 import "tasks/samtools.wdl" as samtools
 
@@ -57,52 +57,13 @@ workflow GatkVariantCalling {
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
 
     if (knownParRegions) {
-        # We define the 'normal' regions by creating a regions file that covers
-        # everything except the XNonParRegions and the YNonParRegions.
-        call bedtools.MergeBedFiles as mergeBeds {
+        call calc.CalculateAutosomalRegions as calculateRegions {
             input:
-                bedFiles = select_all([XNonParRegions, YNonParRegions]),
-                dockerImage = dockerImages["bedtools"]
+                referenceFastaFai = referenceFastaFai,
+                XNonParRegions = select_first([XNonParRegions]),
+                YNonParRegions = select_first([YNonParRegions]),
+                regions = regions
         }
-        call bedtools.Complement as inverseBed {
-            input:
-                inputBed = mergeBeds.mergedBed,
-                faidx = referenceFastaFai,
-                outputBed = "autosomal_regions.bed",
-                dockerImage = dockerImages["bedtools"]
-        }
-
-        if (defined(regions)) {
-            call bedtools.Intersect as intersectAutosomalRegions {
-                input:
-                    regionsA = inverseBed.complementBed,
-                    regionsB = select_first([regions]),
-                    faidx = referenceFastaFai,
-                    outputBed = "intersected_autosomal_regions.bed",
-                    dockerImage = dockerImages["bedtools"]
-            }
-
-            call bedtools.Intersect as intersectX {
-                input:
-                    regionsA = select_first([XNonParRegions]),
-                    regionsB = select_first([regions]),
-                    faidx = referenceFastaFai,
-                    outputBed = "intersected_x_non_par_regions.bed",
-                    dockerImage = dockerImages["bedtools"]
-            }
-
-            call bedtools.Intersect as intersectY {
-                input:
-                    regionsA = select_first([YNonParRegions]),
-                    regionsB = select_first([regions]),
-                    faidx = referenceFastaFai,
-                    outputBed = "intersected_y_non_par_regions.bed",
-                    dockerImage = dockerImages["bedtools"]
-            }
-        }
-        File Xregions = select_first([intersectX.intersectedBed, XNonParRegions])
-        File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
-        File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
     }
 
     call biopet.ScatterRegions as scatterAutosomalRegions {
@@ -114,7 +75,7 @@ workflow GatkVariantCalling {
             # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
             # When there are no non-PAR regions, use the optional regions parameter.
             regions = if knownParRegions
-                      then select_first([autosomalRegions])
+                      then calculateRegions.autosomalRegions
                       else regions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }
@@ -151,7 +112,7 @@ workflow GatkVariantCalling {
             call gatk.HaplotypeCaller as callX {
                 input:
                     outputPath = if (jointgenotyping) then scatterDir + "/X.g.vcf.gz" else scatterDir + "/X.vcf.gz",
-                    intervalList = select_all([Xregions]),
+                    intervalList = select_all([calculateRegions.Xregions]),
                     # Females are default.
                     ploidy = if male then 1 else 2,
                     referenceFasta = referenceFasta,
@@ -170,7 +131,7 @@ workflow GatkVariantCalling {
                 call gatk.HaplotypeCaller as callY {
                     input:
                         outputPath = if (jointgenotyping) then scatterDir + "/Y.g.vcf.gz" else scatterDir + "/Y.vcf.gz",
-                        intervalList = select_all([Yregions]),
+                        intervalList = select_all([calculateRegions.Yregions]),
                         ploidy = 1,
                         referenceFasta = referenceFasta,
                         referenceFastaIndex = referenceFastaFai,
@@ -257,22 +218,23 @@ workflow GatkVariantCalling {
                 outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
                 dockerImage = dockerImages["picard"]
         }
+
+        call vt.Normalize as normalize {
+            input:
+                inputVCF = gatherVcfs.outputVcf,
+                inputVCFIndex = gatherVcfs.outputVcfIndex,
+                referenceFasta = referenceFasta,
+                referenceFastaFai = referenceFastaFai,
+                outputPath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz",
+        }
+
+        call samtools.Tabix as tabix {
+            input:
+                inputFile = normalize.outputVcf,
+                outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.indexed.vcf.gz"
+        }
     }
 
-    call vt.Normalize as normalize {
-        input:
-            inputVCF = gatherVcfs.outputVcf,
-            inputVCFIndex = gatherVcfs.outputVcfIndex,
-            referenceFasta = referenceFasta,
-            referenceFastaFai = referenceFastaFai,
-            outputPath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz",
-    }
-
-    call samtools.Tabix as tabix {
-        input:
-            inputFile = normalize.outputVcf,
-            outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.indexed.vcf.gz"
-    }
 
     output {
         File? outputVcf = gatherVcfs.outputVcf
@@ -281,9 +243,6 @@ workflow GatkVariantCalling {
         Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSampleGvcf.outputVcfIndex)
         Array[File] singleSampleVcfs = select_all(mergeSingleSampleVcf.outputVcf)
         Array[File] singleSampleVcfsIndex = select_all(mergeSingleSampleVcf.outputVcfIndex)
-        File? autosomalRegionsBed = autosomalRegions
-        File? xRegionBed = Xregions
-        File? yRegionBed = Yregions
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
