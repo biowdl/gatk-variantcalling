@@ -62,9 +62,9 @@
         - "chr1	14000	.	A	C"
         - "chr1	14500	.	A	G"
         - "chr1	15000	.	T	G"
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+    - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
+    - path: test-output/multisample.vcf.gz.tbi
 
 - name: two_sample
   tags:
@@ -80,6 +80,9 @@
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
       contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz
+      contains: *vcf-contents
+    - path: test-output/multisample.vcf.gz.tbi
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
       contains: *vcf-contents
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
@@ -102,6 +105,8 @@
     - path: test-output/samples/female.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
+    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.vcf.gz.tbi
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
 
@@ -120,8 +125,12 @@
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
+    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.vcf.gz.tbi
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+      should_exist: false
     - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
+      should_exist: false
 
 
 - name: rna_sample

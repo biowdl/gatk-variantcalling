@@ -72,7 +72,7 @@ def get_rtg_summary(workflow_dir: Path, sample: str,
                     regions: Optional[Path] = None
                     ) -> Dict[str, Union[float, int]]:
     baseline_vcf_file = Path(TEST_DATA, "gender-aware", "expected.vcf.gz")
-    calls_vcf_file = Path(workflow_dir, "test-output", "multisample.normalized_decomposed.indexed.vcf.gz")
+    calls_vcf_file = Path(workflow_dir, "test-output", "multisample.vcf.gz")
     reference_fasta = Path(TEST_DATA, "gender-aware", "reference.fasta")
     sdf_path = create_sdf(reference_fasta)
     # We need a not yet existing directory. Hence mktemp. (Even though this
