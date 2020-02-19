@@ -10,6 +10,5 @@
   "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",
   "GatkVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
   "GatkVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
-  "GatkVariantCalling.scatterSize": 10000,
-  "GatkVariantCalling.normalizedVcf": true
+  "GatkVariantCalling.scatterSize": 10000
 }

@@ -43,7 +43,6 @@ workflow GatkVariantCalling {
         File? regions
         Boolean jointgenotyping = true
         Boolean singleSampleGvcf = false
-        Boolean normalizedVcf = false
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
         Int scatterSize = 1000000000
@@ -219,31 +218,12 @@ workflow GatkVariantCalling {
                 outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
                 dockerImage = dockerImages["picard"]
         }
-
-        if (normalizedVcf) {
-            call vt.Normalize as normalize {
-                input:
-                    inputVCF = gatherVcfs.outputVcf,
-                    inputVCFIndex = gatherVcfs.outputVcfIndex,
-                    referenceFasta = referenceFasta,
-                    referenceFastaFai = referenceFastaFai,
-                    outputPath = outputDir + "/" + vcfBasename + ".normalized_decomposed.vcf.gz",
-            }
-
-            call samtools.Tabix as tabix {
-                input:
-                    inputFile = normalize.outputVcf,
-                    outputFilePath = outputDir + "/" + vcfBasename + ".normalized_decomposed.indexed.vcf.gz"
-            }
-        }
     }
 
 
     output {
         File? outputVcf = gatherVcfs.outputVcf
         File? outputVcfIndex = gatherVcfs.outputVcfIndex
-        File? normalizedVcf = tabix.indexedFile
-        File? normalizedVcfIndex = tabix.index
         Array[File] singleSampleGvcfs = select_all(mergeSingleSampleGvcf.outputVcf)
         Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSampleGvcf.outputVcfIndex)
         Array[File] singleSampleVcfs = select_all(mergeSingleSampleVcf.outputVcf)

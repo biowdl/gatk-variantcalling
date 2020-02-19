@@ -83,9 +83,6 @@
     - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
     - path: test-output/multisample.vcf.gz.tbi
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
-      contains: *vcf-contents
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
 
 - name: two_sample_gender_aware
   tags:
@@ -107,8 +104,6 @@
     - path: test-output/multisample.g.vcf.gz
     - path: test-output/multisample.vcf.gz
     - path: test-output/multisample.vcf.gz.tbi
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
 
 
 - name: two_sample_gender_aware_with_regions
@@ -127,11 +122,6 @@
     - path: test-output/multisample.g.vcf.gz
     - path: test-output/multisample.vcf.gz
     - path: test-output/multisample.vcf.gz.tbi
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
-      should_exist: false
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
-      should_exist: false
-
 
 - name: rna_sample
   tags:

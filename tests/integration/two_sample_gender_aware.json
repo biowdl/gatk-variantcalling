@@ -15,6 +15,5 @@
   "GatkVariantCalling.scatterSize": 10000,
   "GatkVariantCalling.XNonParRegions": "tests/data/gender-aware/x_non_par.bed",
   "GatkVariantCalling.YNonParRegions": "tests/data/gender-aware/y_non_par.bed",
-  "GatkVariantCalling.singleSampleGvcf": true,
-  "GatkVariantCalling.normalizedVcf": true
+  "GatkVariantCalling.singleSampleGvcf": true
 }
