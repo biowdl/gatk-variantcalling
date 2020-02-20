@@ -1,6 +1,9 @@
 {
-  "GatkVariantCalling.bamFilesAndGenders": [{"file":"tests/data/rna3.bam",
-    "index":"tests/data/rna3.bai"}],
+  "GatkVariantCalling.bamFilesAndGenders": [
+    {"file":"tests/data/rna3.bam",
+    "index":"tests/data/rna3.bai"},
+    {"file":"tests/data/rna4.bam",
+    "index":"tests/data/rna4.bai"}],
   "GatkVariantCalling.referenceFasta": "tests/data/reference.fasta",
   "GatkVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
   "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",

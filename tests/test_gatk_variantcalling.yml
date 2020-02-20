@@ -62,9 +62,9 @@
         - "chr1	14000	.	A	C"
         - "chr1	14500	.	A	G"
         - "chr1	15000	.	T	G"
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+    - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
+    - path: test-output/multisample.vcf.gz.tbi
 
 - name: two_sample
   tags:
@@ -80,9 +80,9 @@
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
+    - path: test-output/multisample.vcf.gz
       contains: *vcf-contents
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
+    - path: test-output/multisample.vcf.gz.tbi
 
 - name: two_sample_gender_aware
   tags:
@@ -102,19 +102,9 @@
     - path: test-output/samples/female.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
-    - path: test-output/autosomal_regions.bed
-      contains:
-        - "22	0	10000"
-        - "X	0	5000"
-        - "Y	0	5000"
-    - path: test-output/intersected_autosomal_regions.bed
-      should_exist: false
-    - path: test-output/intersected_x_non_par_regions.bed
-      should_exist: false
-    - path: test-output/intersected_y_non_par_regions.bed
-      should_exist: false
+    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.vcf.gz.tbi
+
 
 - name: two_sample_gender_aware_with_regions
   tags:
@@ -130,19 +120,8 @@
   files:
     - path: test-output/multisample.g.vcf.gz.tbi
     - path: test-output/multisample.g.vcf.gz
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz
-    - path: test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi
-    - path: test-output/intersected_autosomal_regions.bed
-      contains:
-        - "22	2000	8000"
-        - "X	2000	5000"
-        - "Y	2000	5000"
-    - path: test-output/intersected_x_non_par_regions.bed
-      contains:
-        - "X	5000	8000"
-    - path: test-output/intersected_y_non_par_regions.bed
-      contains:
-        - "Y	5000	8000"
+    - path: test-output/multisample.vcf.gz
+    - path: test-output/multisample.vcf.gz.tbi
 
 - name: rna_sample
   tags:
@@ -159,13 +138,7 @@
       should_exist: false
     - path: test-output/multisample.g.vcf.gz
       should_exist: false
-    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz"
-    - path: "test-output/multisample.normalized_decomposed.indexed.vcf.gz.tbi"
-    - path: test-output/samples/male.g.vcf.gz
+    - path: "test-output/multisample.vcf.gz"
       should_exist: false
-    - path: test-output/samples/male.g.vcf.gz.tbi
-      should_exist: false
-    - path: test-output/samples/female.g.vcf.gz
-      should_exist: false
-    - path: test-output/samples/female.g.vcf.gz.tbi
-      should_exist: false
+    - path: "test-output/samples/rna3.vcf.gz"
+    - path: "test-output/samples/rna4.vcf.gz"
