@@ -83,8 +83,8 @@ workflow CalculateRegions {
 
     parameter_meta {
         regions: {description: "A bed file describing the regions to operate on. Will be used to intersect the other regions.", category: "common"}
-        XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
-        YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
+        XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "required"}
+        YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "required"}
         referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
         dockerImages: { description: "specify which docker images should be used for running this pipeline", category: "advanced" }
     }
