@@ -80,4 +80,12 @@ workflow CalculateRegions {
         File Yregions = select_first([intersectY.intersectedBed, YNonParRegions])
         File autosomalRegions = select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
     }
+
+    parameter_meta {
+        regions: {description: "A bed file describing the regions to operate on. Will be used to intersect the other regions.", category: "common"}
+        XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
+        YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
+        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        dockerImages: { description: "specify which docker images should be used for running this pipeline", category: "advanced" }
+    }
 }

@@ -62,7 +62,8 @@ workflow GatkVariantCalling {
                 referenceFastaFai = referenceFastaFai,
                 XNonParRegions = select_first([XNonParRegions]),
                 YNonParRegions = select_first([YNonParRegions]),
-                regions = regions
+                regions = regions,
+                dockerImages = dockerImages
         }
     }
 
