@@ -43,9 +43,11 @@ workflow GatkVariantCalling {
         File? regions
         Boolean jointgenotyping = true
         Boolean singleSampleGvcf = false
+        # Added scatterSizeMillions to overcome Json max int limit
+        Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = 1000000000
+        Int scatterSize = scatterSizeMillions * 1000000
         Map[String, String] dockerImages = {
           "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
@@ -244,8 +246,10 @@ workflow GatkVariantCalling {
         dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "common"}
         dbsnpVCFIndex: { description: "Index (.tbi) file for the dbsnp VCF", category: "common"}
         outputDir: { description: "The directory where the output files should be located", category: "common" }
-        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be seperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
               category: "advanced"}
+        scatterSizeMillions:{ description: "Same as scatterSize, but is multiplied by 1000000 to get scatterSize. This allows for setting larger values more easily",
+                              category: "advanced"}
         regions: {description: "A bed file describing the regions to operate on.", category: "common"}
         XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "common"}
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}

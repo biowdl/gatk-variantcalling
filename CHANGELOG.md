@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 -->
 version 2.0.0-dev
 -----------------
++ Add a scatterSizeMillions parameter to make it easier to set larger scatter 
+  sizes.
 + Multisample VCFs are only produced when joint genotyping is used.
 + Add option to output single-sample GVCFs
 + Make Joint Genotyping by GenotypeGVCF an optional step, so the pipeline can 
