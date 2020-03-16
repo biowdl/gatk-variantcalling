@@ -102,7 +102,7 @@ GatkVariantCalling.
 </dd>
 <dt id="GatkVariantCalling.singleSampleGvcf"><a href="#GatkVariantCalling.singleSampleGvcf">GatkVariantCalling.singleSampleGvcf</a></dt>
 <dd>
-    <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
+    <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
     Whether to output single-sample gvcfs
 </dd>
 <dt id="GatkVariantCalling.vcfBasename"><a href="#GatkVariantCalling.vcfBasename">GatkVariantCalling.vcfBasename</a></dt>
@@ -126,10 +126,20 @@ GatkVariantCalling.
 <details>
 <summary> Show/Hide </summary>
 <dl>
+<dt id="GatkVariantCalling.calculateRegions.mergeBeds.outputBed"><a href="#GatkVariantCalling.calculateRegions.mergeBeds.outputBed">GatkVariantCalling.calculateRegions.mergeBeds.outputBed</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"merged.bed"</code><br />
+    The path to write the output to
+</dd>
 <dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.contamination"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.contamination">GatkVariantCalling.callAutosomal.haplotypeCaller.contamination</a></dt>
 <dd>
     <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.emitRefConfidence"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.emitRefConfidence">GatkVariantCalling.callAutosomal.haplotypeCaller.emitRefConfidence</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
 </dd>
 <dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx">GatkVariantCalling.callAutosomal.haplotypeCaller.javaXmx</a></dt>
 <dd>
@@ -141,10 +151,20 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
     The amount of memory this job will use.
 </dd>
+<dt id="GatkVariantCalling.callAutosomal.haplotypeCaller.outputMode"><a href="#GatkVariantCalling.callAutosomal.haplotypeCaller.outputMode">GatkVariantCalling.callAutosomal.haplotypeCaller.outputMode</a></dt>
+<dd>
+    <i>String? </i><br />
+    Specifies which type of calls we should output. Same as HaplotypeCaller's `--output-mode` option.
+</dd>
 <dt id="GatkVariantCalling.callX.contamination"><a href="#GatkVariantCalling.callX.contamination">GatkVariantCalling.callX.contamination</a></dt>
 <dd>
     <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callX.emitRefConfidence"><a href="#GatkVariantCalling.callX.emitRefConfidence">GatkVariantCalling.callX.emitRefConfidence</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
 </dd>
 <dt id="GatkVariantCalling.callX.javaXmx"><a href="#GatkVariantCalling.callX.javaXmx">GatkVariantCalling.callX.javaXmx</a></dt>
 <dd>
@@ -156,10 +176,20 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
     The amount of memory this job will use.
 </dd>
+<dt id="GatkVariantCalling.callX.outputMode"><a href="#GatkVariantCalling.callX.outputMode">GatkVariantCalling.callX.outputMode</a></dt>
+<dd>
+    <i>String? </i><br />
+    Specifies which type of calls we should output. Same as HaplotypeCaller's `--output-mode` option.
+</dd>
 <dt id="GatkVariantCalling.callY.contamination"><a href="#GatkVariantCalling.callY.contamination">GatkVariantCalling.callY.contamination</a></dt>
 <dd>
     <i>Float? </i><br />
     Equivalent to HaplotypeCaller's `-contamination` option.
+</dd>
+<dt id="GatkVariantCalling.callY.emitRefConfidence"><a href="#GatkVariantCalling.callY.emitRefConfidence">GatkVariantCalling.callY.emitRefConfidence</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
 </dd>
 <dt id="GatkVariantCalling.callY.javaXmx"><a href="#GatkVariantCalling.callY.javaXmx">GatkVariantCalling.callY.javaXmx</a></dt>
 <dd>
@@ -170,6 +200,11 @@ GatkVariantCalling.
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
     The amount of memory this job will use.
+</dd>
+<dt id="GatkVariantCalling.callY.outputMode"><a href="#GatkVariantCalling.callY.outputMode">GatkVariantCalling.callY.outputMode</a></dt>
+<dd>
+    <i>String? </i><br />
+    Specifies which type of calls we should output. Same as HaplotypeCaller's `--output-mode` option.
 </dd>
 <dt id="GatkVariantCalling.dockerImages"><a href="#GatkVariantCalling.dockerImages">GatkVariantCalling.dockerImages</a></dt>
 <dd>
@@ -216,22 +251,27 @@ GatkVariantCalling.
     <i>String </i><i>&mdash; Default:</i> <code>"18G"</code><br />
     The amount of memory this job will use.
 </dd>
-<dt id="GatkVariantCalling.mergeBeds.outputBed"><a href="#GatkVariantCalling.mergeBeds.outputBed">GatkVariantCalling.mergeBeds.outputBed</a></dt>
-<dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"merged.bed"</code><br />
-    The path to write the output to
-</dd>
-<dt id="GatkVariantCalling.mergeSingleSample.intervals"><a href="#GatkVariantCalling.mergeSingleSample.intervals">GatkVariantCalling.mergeSingleSample.intervals</a></dt>
+<dt id="GatkVariantCalling.mergeSingleSampleGvcf.intervals"><a href="#GatkVariantCalling.mergeSingleSampleGvcf.intervals">GatkVariantCalling.mergeSingleSampleGvcf.intervals</a></dt>
 <dd>
     <i>Array[File] </i><i>&mdash; Default:</i> <code>[]</code><br />
     Bed files or interval lists describing the regions to operate on.
 </dd>
-<dt id="GatkVariantCalling.mergeSingleSample.javaXmx"><a href="#GatkVariantCalling.mergeSingleSample.javaXmx">GatkVariantCalling.mergeSingleSample.javaXmx</a></dt>
+<dt id="GatkVariantCalling.mergeSingleSampleGvcf.javaXmx"><a href="#GatkVariantCalling.mergeSingleSampleGvcf.javaXmx">GatkVariantCalling.mergeSingleSampleGvcf.javaXmx</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"12G"</code><br />
     The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
 </dd>
-<dt id="GatkVariantCalling.mergeSingleSample.memory"><a href="#GatkVariantCalling.mergeSingleSample.memory">GatkVariantCalling.mergeSingleSample.memory</a></dt>
+<dt id="GatkVariantCalling.mergeSingleSampleGvcf.memory"><a href="#GatkVariantCalling.mergeSingleSampleGvcf.memory">GatkVariantCalling.mergeSingleSampleGvcf.memory</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
+    The amount of memory this job will use.
+</dd>
+<dt id="GatkVariantCalling.mergeSingleSampleVcf.javaXmx"><a href="#GatkVariantCalling.mergeSingleSampleVcf.javaXmx">GatkVariantCalling.mergeSingleSampleVcf.javaXmx</a></dt>
+<dd>
+    <i>String </i><i>&mdash; Default:</i> <code>"8G"</code><br />
+    The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.
+</dd>
+<dt id="GatkVariantCalling.mergeSingleSampleVcf.memory"><a href="#GatkVariantCalling.mergeSingleSampleVcf.memory">GatkVariantCalling.mergeSingleSampleVcf.memory</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>"24G"</code><br />
     The amount of memory this job will use.
@@ -288,8 +328,13 @@ GatkVariantCalling.
 </dd>
 <dt id="GatkVariantCalling.scatterSize"><a href="#GatkVariantCalling.scatterSize">GatkVariantCalling.scatterSize</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1000000000</code><br />
-    The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be sseperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.
+    <i>Int </i><i>&mdash; Default:</i> <code>scatterSizeMillions * 1000000</code><br />
+    The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be seperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.
+</dd>
+<dt id="GatkVariantCalling.scatterSizeMillions"><a href="#GatkVariantCalling.scatterSizeMillions">GatkVariantCalling.scatterSizeMillions</a></dt>
+<dd>
+    <i>Int </i><i>&mdash; Default:</i> <code>1000</code><br />
+    Same as scatterSize, but is multiplied by 1000000 to get scatterSize. This allows for setting larger values more easily
 </dd>
 </dl>
 </details>
