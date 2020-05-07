@@ -104,7 +104,7 @@ workflow MultisampleCalling {
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 outputDir = outputDir + "/samples/",
                 gvcf = jointgenotyping,
-                mergeVcf = singleSampleGvcf,
+                mergeVcf = singleSampleGvcf || !jointgenotyping,
                 autosomalRegionScatters = scatterAutosomalRegions.scatters,
                 XNonParRegions = calculateRegions.Xregions,
                 YNonParRegions = calculateRegions.Yregions,
