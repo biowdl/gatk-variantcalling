@@ -26,6 +26,7 @@ import "tasks/picard.wdl" as picard
 
 import "calculate-regions.wdl" as calc
 import "single-sample-variantcalling.wdl" as singlesample
+import "jointgenotyping.wdl" as jg
 
 workflow MultisampleCalling {
     input {
@@ -110,61 +111,30 @@ workflow MultisampleCalling {
     }
 
     if (jointgenotyping) {
-        call gatk.CombineGVCFs as gatherGvcfs {
-                input:
-                    gvcfFiles = flatten(singleSampleCalling.vcfScatters),
-                    gvcfFilesIndex = flatten(singleSampleCalling.vcfIndexScatters),
-                    outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
-                    referenceFasta = referenceFasta,
-                    referenceFastaFai = referenceFastaFai,
-                    referenceFastaDict = referenceFastaDict,
-                    dockerImage = dockerImages["gatk4"]
-
-        }
-
-        call biopet.ScatterRegions as scatterAllRegions {
+        call jg.JointGenotyping as JointGenotyping {
             input:
-                referenceFasta = referenceFasta,
-                referenceFastaDict = referenceFastaDict,
-                scatterSize = scatterSize,
-                regions = regions,
-                dockerImage = dockerImages["biopet-scatterregions"]
-        }
-
-        scatter (bed in scatterAllRegions.scatters) {
-
-            call gatk.GenotypeGVCFs as genotypeGvcfs {
-                input:
-                    gvcfFile = gatherGvcfs.outputVcf,
-                    gvcfFileIndex = gatherGvcfs.outputVcfIndex,
-                    intervals = [bed],
+                 gvcfFiles = flatten(singleSampleCalling.vcfScatters),
+                    gvcfFilesIndex = flatten(singleSampleCalling.vcfIndexScatters),
+                    outputDir = outputDir,
                     referenceFasta = referenceFasta,
-                    referenceFastaDict = referenceFastaDict,
                     referenceFastaFai = referenceFastaFai,
-                    outputPath = outputDir + "/scatters/" + basename(bed) + ".genotyped.vcf.gz",
+                    referenceFastaDict = referenceFastaDict,
+                    scatterSize = scatterSize,
+                    dockerImages = dockerImages,
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
-                    dockerImage = dockerImages["gatk4"]
-            }
-        }
-
-        call picard.MergeVCFs as gatherVcfs {
-            input:
-                inputVCFs = genotypeGvcfs.outputVCF,
-                inputVCFsIndexes = genotypeGvcfs.outputVCFIndex,
-                outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
-                dockerImage = dockerImages["picard"]
+                    vcfBasename = vcfBasename
         }
     }
 
 
     output {
-        File? outputVcf = gatherVcfs.outputVcf
-        File? outputVcfIndex = gatherVcfs.outputVcfIndex
+        File? multisampleVcf = JointGenotyping.multisampleVcf
+        File? multisampleVcfIndex = JointGenotyping.multisampleVcfIndex
+        File? multisampleGVcf = JointGenotyping.multisampleGVcf
+        File? multisampleGVcfIndex = JointGenotyping.multisampleGVcfIndex
         Array[File] singleSampleVcfs = select_all(singleSampleCalling.outputVcf)
         Array[File] singleSampleVcfsIndex = select_all(singleSampleCalling.outputVcfIndex)
-        File? outputGVcf = gatherGvcfs.outputVcf
-        File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
 
     parameter_meta {
