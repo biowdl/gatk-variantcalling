@@ -28,7 +28,7 @@ import "calculate-regions.wdl" as calc
 import "tasks/vt.wdl" as vt
 import "tasks/samtools.wdl" as samtools
 
-workflow GatkVariantCalling {
+workflow SingleSampleCalling {
     input {
         File bam
         File bamIndex
@@ -154,8 +154,8 @@ workflow GatkVariantCalling {
     output {
         File? outputVcf = if noScatter then noScatterVcf else mergedVcf
         File? outputVcfIndex = if noScatter then noScatterVcfIndex else mergedVcfIndex
-        Array[File] VcfScatters = VCFs
-        Array[File] VcfIndexScatters = VCFIndexes
+        Array[File] vcfScatters = VCFs
+        Array[File] vcfIndexScatters = VCFIndexes
     }
 
     parameter_meta {

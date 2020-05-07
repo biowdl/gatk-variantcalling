@@ -24,11 +24,13 @@ import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "haplotypecaller.wdl" as haplotype_wf
-import "calculate-regions.wdl" as calc
 import "tasks/vt.wdl" as vt
 import "tasks/samtools.wdl" as samtools
 
-workflow GatkVariantCalling {
+import "calculate-regions.wdl" as calc
+import "single-sample-variantcalling.wdl" as singlesample
+
+workflow MultisampleCalling {
     input {
         Array[BamAndGender] bamFilesAndGenders
         String outputDir = "."
@@ -86,100 +88,35 @@ workflow GatkVariantCalling {
     scatter (bamGender in bamFilesAndGenders) {
         String gender = select_first([bamGender.gender, "unknown"])
         String sampleName = basename(bamGender.file, ".bam")
-        Boolean male = (gender == "male" || gender == "m" || gender == "M")
-        Boolean female = (gender == "female" || gender == "f" || gender == "F")
-        Boolean unknownGender = !(male || female)
-        String scatterDir = outputDir + "/samples/" + sampleName + "/scatters/"
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
         # when we have 1 bam file.
-        call haplotype_wf.Caller as callAutosomal {
+        call singlesample.SingleSampleCalling as singleSampleCalling {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
-                scatterList = scatterAutosomalRegions.scatters,
+                gender = bamGender.gender,
+                sampleName = sampleName,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
-                outputDir = scatterDir,
+                outputDir = outputDir + "/samples/",
                 gvcf = jointgenotyping,
+                mergeVcf = singleSampleGvcf,
+                autosomalRegionScatters = scatterAutosomalRegions.scatters,
+                XNonParRegions = calculateRegions.Xregions,
+                YNonParRegions = calculateRegions.Yregions,
                 dockerImages = dockerImages
-        }
-
-        # If the PAR regions are known we call X and Y separately. If not the
-        # autosomalRegions BED file will simply have contained all regions.
-        if (knownParRegions) {
-            # Males have ploidy 1 for X. Call females and unknowns with ploidy 2
-            call gatk.HaplotypeCaller as callX {
-                input:
-                    outputPath = if (jointgenotyping) then scatterDir + "/X.g.vcf.gz" else scatterDir + "/X.vcf.gz",
-                    intervalList = select_all([calculateRegions.Xregions]),
-                    # Females are default.
-                    ploidy = if male then 1 else 2,
-                    referenceFasta = referenceFasta,
-                    referenceFastaIndex = referenceFastaFai,
-                    referenceFastaDict = referenceFastaDict,
-                    inputBams = [bamGender.file],
-                    inputBamsIndex = [bamGender.index],
-                    dbsnpVCF = dbsnpVCF,
-                    dbsnpVCFIndex = dbsnpVCFIndex,
-                    gvcf = jointgenotyping,
-                    dockerImage = dockerImages["gatk4"]
-            }
-
-            # Only call y on males. Call on unknowns to be sure.
-            if (male || unknownGender) {
-                call gatk.HaplotypeCaller as callY {
-                    input:
-                        outputPath = if (jointgenotyping) then scatterDir + "/Y.g.vcf.gz" else scatterDir + "/Y.vcf.gz",
-                        intervalList = select_all([calculateRegions.Yregions]),
-                        ploidy = 1,
-                        referenceFasta = referenceFasta,
-                        referenceFastaIndex = referenceFastaFai,
-                        referenceFastaDict = referenceFastaDict,
-                        inputBams = [bamGender.file],
-                        inputBamsIndex = [bamGender.index],
-                        dbsnpVCF = dbsnpVCF,
-                        dbsnpVCFIndex = dbsnpVCFIndex,
-                        gvcf = jointgenotyping,
-                        dockerImage = dockerImages["gatk4"]
-                }
-            }
-        }
-
-        Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
-        Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
-
-        if (singleSampleGvcf && jointgenotyping) {
-            call gatk.CombineGVCFs as mergeSingleSampleGvcf {
-                input:
-                    gvcfFiles = VCFs,
-                    gvcfFilesIndex = VCFIndexes,
-                    outputPath = outputDir + "/samples/" + sampleName + ".g.vcf.gz",
-                    referenceFasta = referenceFasta,
-                    referenceFastaFai = referenceFastaFai,
-                    referenceFastaDict = referenceFastaDict,
-                    dockerImage = dockerImages["gatk4"]
-            }
-        }
-        if (!jointgenotyping) {
-            call picard.MergeVCFs as mergeSingleSampleVcf {
-                input:
-                    inputVCFs = VCFs,
-                    inputVCFsIndexes = VCFIndexes,
-                    outputVcfPath = outputDir + "/samples/" + sampleName + ".vcf.gz",
-                    dockerImage = dockerImages["picard"]
-            }
         }
     }
 
     if (jointgenotyping) {
         call gatk.CombineGVCFs as gatherGvcfs {
                 input:
-                    gvcfFiles = flatten(VCFs),
-                    gvcfFilesIndex = flatten(VCFIndexes),
+                    gvcfFiles = flatten(singleSampleCalling.vcfScatters),
+                    gvcfFilesIndex = flatten(singleSampleCalling.vcfIndexScatters),
                     outputPath = outputDir + "/" + vcfBasename + ".g.vcf.gz",
                     referenceFasta = referenceFasta,
                     referenceFastaFai = referenceFastaFai,
@@ -227,10 +164,8 @@ workflow GatkVariantCalling {
     output {
         File? outputVcf = gatherVcfs.outputVcf
         File? outputVcfIndex = gatherVcfs.outputVcfIndex
-        Array[File] singleSampleGvcfs = select_all(mergeSingleSampleGvcf.outputVcf)
-        Array[File] singleSampleGvcfsIndex = select_all(mergeSingleSampleGvcf.outputVcfIndex)
-        Array[File] singleSampleVcfs = select_all(mergeSingleSampleVcf.outputVcf)
-        Array[File] singleSampleVcfsIndex = select_all(mergeSingleSampleVcf.outputVcfIndex)
+        Array[File] singleSampleVcfs = select_all(singleSampleCalling.outputVcf)
+        Array[File] singleSampleVcfsIndex = select_all(singleSampleCalling.outputVcfIndex)
         File? outputGVcf = gatherGvcfs.outputVcf
         File? outputGVcfIndex = gatherGvcfs.outputVcfIndex
     }
