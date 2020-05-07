@@ -61,7 +61,7 @@ workflow SingleSampleCalling {
     scatter (bed in autosomalRegionScatters) {
         call gatk.HaplotypeCaller as callAutosomal {
             input:
-                outputPath = scatterDir + "/" + basename(bed) + if (gvcf) then ".g" else "" + ".vcf.gz",
+                outputPath = scatterDir + "/" + basename(bed) + (if (gvcf) then ".g" else "") + ".vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
