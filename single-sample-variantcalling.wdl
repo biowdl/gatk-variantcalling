@@ -60,11 +60,9 @@ workflow GatkVariantCalling {
     String scatterDir = outputDir + "/" + sampleName + "/scatters/"
 
     scatter (bed in autosomalRegionScatters) {
-        String noScatterName = outputDir + "/" + sampleName
-        String name = scatterDir + "/" + basename(bed)
         call gatk.HaplotypeCaller as callAutosomal {
             input:
-                outputPath = if noScatter then noScatterName else name + if (gvcf) then ".g" else "" + ".vcf.gz",
+                outputPath = scatterDir + "/" + basename(bed) + if (gvcf) then ".g" else "" + ".vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
@@ -118,8 +116,8 @@ workflow GatkVariantCalling {
         }
     }
 
-    Array[File] VCFs = flatten([callAutosomal.outputVcfs, select_all([callY.outputVCF, callX.outputVCF])])
-    Array[File] VCFIndexes = flatten([callAutosomal.outputVcfsIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
+    Array[File] VCFs = flatten([callAutosomal.outputVCF, select_all([callY.outputVCF, callX.outputVCF])])
+    Array[File] VCFIndexes = flatten([callAutosomal.outputVCFIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
 
 
     if (mergeVcf && !noScatter && gvcf) {
@@ -144,10 +142,18 @@ workflow GatkVariantCalling {
         }
     }
 
+    File? mergedVcf = if gvcf then mergeSingleSampleGvcf.outputVcf else mergeSingleSampleVcf.outputVcf
+    File? mergedVcfIndex = if gvcf then mergeSingleSampleGvcf.outputVcfIndex else mergeSingleSampleVcf.outputVcfIndex
+
+    if (noScatter) {
+        File noScatterVcf = callAutosomal.outputVCF[0]
+        File noScatterVcfIndex = callAutosomal.outputVCFIndex[0]
+    }
+
 
     output {
-        File? outputVcf = if gvcf then mergeSingleSampleGvcf.outputVcf else mergeSingleSampleVcf.outputVcf
-        File? outputVcfIndex = if gvcf then mergeSingleSampleGvcf.outputVcfIndex else mergeSingleSampleVcf.outputVcfIndex
+        File? outputVcf = if noScatter then noScatterVcf else mergedVcf
+        File? outputVcfIndex = if noScatter then noScatterVcfIndex else mergedVcfIndex
         Array[File] VcfScatters = VCFs
         Array[File] VcfIndexScatters = VCFIndexes
     }
