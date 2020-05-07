@@ -20,12 +20,8 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "calculate-regions.wdl" as calc
-import "tasks/vt.wdl" as vt
-import "tasks/samtools.wdl" as samtools
 
 workflow SingleSampleCalling {
     input {
@@ -176,6 +172,7 @@ workflow SingleSampleCalling {
                         category: "advanced" }
         gvcf: {description: "Whether to call in GVCF mode.",
                           category: "common"}
-        singleSampleGvcf: {description: "Whether to output single-sample gvcfs", category: "common"}
+
+        mergeVcf: {description: "Whether to merge scattered VCFs.", category: "common"}
     }
 }

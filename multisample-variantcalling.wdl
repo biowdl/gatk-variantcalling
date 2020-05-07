@@ -23,8 +23,6 @@ version 1.0
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "tasks/vt.wdl" as vt
-import "tasks/samtools.wdl" as samtools
 
 import "calculate-regions.wdl" as calc
 import "single-sample-variantcalling.wdl" as singlesample
@@ -94,7 +92,7 @@ workflow MultisampleCalling {
             input:
                 bam = bamGender.file,
                 bamIndex = bamGender.index,
-                gender = bamGender.gender,
+                gender = select_first([bamGender.gender, "unknown"]),
                 sampleName = sampleName,
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
