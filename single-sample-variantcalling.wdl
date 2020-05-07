@@ -23,7 +23,6 @@ version 1.0
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
-import "haplotypecaller.wdl" as haplotype_wf
 import "calculate-regions.wdl" as calc
 import "tasks/vt.wdl" as vt
 import "tasks/samtools.wdl" as samtools
