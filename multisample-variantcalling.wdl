@@ -56,31 +56,15 @@ workflow MultisampleCalling {
         }
     }
 
-    Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
-
-    if (knownParRegions) {
-        call calc.CalculateRegions as calculateRegions {
-            input:
-                referenceFastaFai = referenceFastaFai,
-                XNonParRegions = select_first([XNonParRegions]),
-                YNonParRegions = select_first([YNonParRegions]),
-                regions = regions,
-                dockerImages = dockerImages
-        }
-    }
-
-    call biopet.ScatterRegions as scatterAutosomalRegions {
+    call calc.CalculateRegions as calculateRegions {
         input:
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
-            scatterSize = scatterSize,
-            # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
-            # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
-            # When there are no non-PAR regions, use the optional regions parameter.
-            regions = if knownParRegions
-                      then calculateRegions.autosomalRegions
-                      else regions,
-            dockerImage = dockerImages["biopet-scatterregions"]
+            referenceFastaFai = referenceFastaFai,
+            XNonParRegions = XNonParRegions,
+            YNonParRegions = YNonParRegions,
+            regions = regions,
+            dockerImages = dockerImages
     }
 
     scatter (bamGender in bamFilesAndGenders) {
@@ -103,7 +87,7 @@ workflow MultisampleCalling {
                 outputDir = outputDir + "/samples/",
                 gvcf = jointgenotyping,
                 mergeVcf = singleSampleGvcf || !jointgenotyping,
-                autosomalRegionScatters = scatterAutosomalRegions.scatters,
+                autosomalRegionScatters = calculateRegions.autosomalRegionScatters,
                 XNonParRegions = calculateRegions.Xregions,
                 YNonParRegions = calculateRegions.Yregions,
                 dockerImages = dockerImages
