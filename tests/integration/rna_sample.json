@@ -10,5 +10,7 @@
   "MultisampleCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
   "MultisampleCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
   "MultisampleCalling.scatterSize": 10000,
-  "MultisampleCalling.jointgenotyping": false
+  "MultisampleCalling.jointgenotyping": false,
+  "MultisampleCalling.dontUseSoftClippedBases": true,
+  "MultisampleCalling.standardMinConfidenceThresholdForCalling": 20.0
 }
