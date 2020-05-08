@@ -53,11 +53,13 @@ workflow SingleSampleCalling {
     Boolean noScatter = length(autosomalRegionScatters) == 1 && !knownParRegions
 
     String scatterDir = outputDir + "/" + sampleName + "/scatters/"
+    String vcfBasename = outputDir + "/" + sampleName
 
     scatter (bed in autosomalRegionScatters) {
+        String scatterBasename = scatterDir + "/" + basename(bed)
         call gatk.HaplotypeCaller as callAutosomal {
             input:
-                outputPath = scatterDir + "/" + basename(bed) + (if (gvcf) then ".g" else "") + ".vcf.gz",
+                outputPath = (if noScatter then vcfBasename else scatterBasename) + (if (gvcf) then ".g" else "") + ".vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
