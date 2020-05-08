@@ -39,6 +39,8 @@ workflow SingleSampleCalling {
         File? YNonParRegions
         Array[File]+ autosomalRegionScatters
         Boolean gvcf = false
+        Boolean dontUseSoftClippedBases = false  # Should be true for RNA
+        Float? standardMinConfidenceThresholdForCalling  # should be 20.0 for RNA
         Boolean mergeVcf = true
         Map[String, String] dockerImages = {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
@@ -68,6 +70,8 @@ workflow SingleSampleCalling {
                 inputBamsIndex = [bamIndex],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                dontUseSoftClippedBases = dontUseSoftClippedBases,
+                standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                 gvcf = gvcf,
                 dockerImage = dockerImages["gatk4"]
         }
@@ -89,6 +93,8 @@ workflow SingleSampleCalling {
                 inputBamsIndex = [bamIndex],
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
+                dontUseSoftClippedBases = dontUseSoftClippedBases,
+                standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                 gvcf = gvcf,
                 dockerImage = dockerImages["gatk4"]
         }
@@ -108,6 +114,8 @@ workflow SingleSampleCalling {
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
                     gvcf = gvcf,
+                    dontUseSoftClippedBases = dontUseSoftClippedBases,
+                    standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                     dockerImage = dockerImages["gatk4"]
             }
         }

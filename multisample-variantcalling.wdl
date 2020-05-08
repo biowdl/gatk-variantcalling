@@ -20,10 +20,6 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "tasks/biopet/biopet.wdl" as biopet
-import "tasks/gatk.wdl" as gatk
-import "tasks/picard.wdl" as picard
-
 import "calculate-regions.wdl" as calc
 import "single-sample-variantcalling.wdl" as singlesample
 import "jointgenotyping.wdl" as jg
@@ -43,6 +39,8 @@ workflow MultisampleCalling {
         File? regions
         Boolean jointgenotyping = true
         Boolean singleSampleGvcf = false
+        Boolean dontUseSoftClippedBases = false
+        Float? standardMinConfidenceThresholdForCalling
         # Added scatterSizeMillions to overcome Json max int limit
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
@@ -68,7 +66,6 @@ workflow MultisampleCalling {
     }
 
     scatter (bamGender in bamFilesAndGenders) {
-        String gender = select_first([bamGender.gender, "unknown"])
         String sampleName = basename(bamGender.file, ".bam")
         # Call separate pipeline to allow scatter in scatter.
         # Also this is needed. If there are 50 bam files, we need more scattering than
@@ -86,6 +83,8 @@ workflow MultisampleCalling {
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 outputDir = outputDir + "/samples/",
                 gvcf = jointgenotyping,
+                dontUseSoftClippedBases = dontUseSoftClippedBases,
+                standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                 mergeVcf = singleSampleGvcf || !jointgenotyping,
                 autosomalRegionScatters = calculateRegions.autosomalRegionScatters,
                 XNonParRegions = calculateRegions.Xregions,
