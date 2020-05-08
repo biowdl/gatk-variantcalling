@@ -13,7 +13,7 @@ version 3.0.0-dev
 -----------------
 + Refactoring of the pipeline:
     + Split up the pipeline into a single sample variant calling pipeline and 
-      a part that performs the jointgenotyping. This allows for more elegantly
+      a part that performs the joint genotyping. This allows for more elegantly
       integrating the pipeline into other pipelines.
     + Merge steps are only performed when there is more than one scatter. 
       This prevents data from being written twice unnecessarily.
