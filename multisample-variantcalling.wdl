@@ -143,6 +143,8 @@ workflow MultisampleCalling {
         jointgenotyping: {description: "Whether to perform jointgenotyping (using HaplotypeCaller to call GVCFs and merge them with GenotypeGVCFs) or not",
                           category: "common"}
         singleSampleGvcf: {description: "Whether to output single-sample gvcfs", category: "common"}
+        dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
+        standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
     }
 }
 
