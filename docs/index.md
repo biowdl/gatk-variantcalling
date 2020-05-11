@@ -14,7 +14,7 @@ https://www.lumc.nl/).
 This workflow can be run using
 [Cromwell](http://cromwell.readthedocs.io/en/stable/):
 ```
-java -jar cromwell-<version>.jar run -i inputs.json gatk-variantcalling.wdl
+java -jar cromwell-<version>.jar run -i inputs.json multisample-variantcalling.wdl
 ```
 
 ### Inputs
@@ -25,10 +25,10 @@ using Womtool as described in the
 For an overview of all available inputs, see [this page](./inputs.html).
 ```json
 {
-  "GatkVariantCalling.referenceFasta": "A reference fasta file",
-  "GatkVariantCalling.referenceFastaFai": "The index for the reference fasta",
-  "GatkVariantCalling.referenceFastaDict": "The dict file for the reference fasta",
-  "GatkVariantCalling.bamFilesAndGenders": "A list of structs. Each struct contains the bam file, the index and the gender of the sample. The gender is optional. " 
+  "MultisampleCalling.referenceFasta": "A reference fasta file",
+  "MultisampleCalling.referenceFastaFai": "The index for the reference fasta",
+  "MultisampleCalling.referenceFastaDict": "The dict file for the reference fasta",
+  "MultisampleCalling.bamFilesAndGenders": "A list of structs. Each struct contains the bam file, the index and the gender of the sample. The gender is optional. " 
  }
 ```
 `gender` can be set to `null`. Actionable values are `female`, `male`, `F`, 
@@ -46,14 +46,14 @@ The following actions are taken for each gender:
 Some additional inputs which may be of interest are:
 ```json
 {
-  "GatkVariantCalling.dbsnpVCF": "A dbSNP VCF file with known variants.",
-  "GatkVariantCalling.dbsnpVCFIndex": "Index (.tbi) for the dbSNP VCF file",
-  "GatkVariantCalling.regions": "The path to a bed file containing the regions for which variant calling will be performed",
-  "GatkVariantCalling.scatterSize": "The size of scatter regions (see explanation of scattering below), defaults to 10,000,000",
-  "GatkVariantCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
-  "GatkVariantCalling.XNonParRergions": "Bed file with the non-PAR regions of X. Required for gender-aware variant calling.",
-  "GatkVariantCalling.YNonParRegions": "Bed file with the non-PAR regions of Y. Required for gender-aware variant calling.",
-  "GatkVariantCalling.singleSampleGvcf": "Output Gvcfs for every single sample."
+  "MultisampleCalling.dbsnpVCF": "A dbSNP VCF file with known variants.",
+  "MultisampleCalling.dbsnpVCFIndex": "Index (.tbi) for the dbSNP VCF file",
+  "MultisampleCalling.regions": "The path to a bed file containing the regions for which variant calling will be performed",
+  "MultisampleCalling.scatterSize": "The size of scatter regions (see explanation of scattering below), defaults to 10,000,000",
+  "MultisampleCalling.vcfBasename": "The basename of the to be outputed VCF files, defaults to 'multisample'",
+  "MultisampleCalling.XNonParRergions": "Bed file with the non-PAR regions of X. Required for gender-aware variant calling.",
+  "MultisampleCalling.YNonParRegions": "Bed file with the non-PAR regions of Y. Required for gender-aware variant calling.",
+  "MultisampleCalling.singleSampleGvcf": "Output Gvcfs for every single sample."
 }
 ```
 When the X and Y non-PAR regions are not both provided, GATK will call all 
@@ -79,23 +79,23 @@ Example `options.json` file:
   }
 }
 ```
-Alternatively an output directory can be set with `GatkVariantCalling.outputDir`.
-`GatkVariantCalling.outputDir` must be mounted in the docker container. Cromwell will
+Alternatively an output directory can be set with `MultisampleCalling.outputDir`.
+`MultisampleCalling.outputDir` must be mounted in the docker container. Cromwell will
 need a custom configuration to allow this.
 
 #### Example
 ```json
 {
-  "GatkVariantCalling.dbsnpVCF": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz",
-  "GatkVariantCalling.dbsnpVCFIndex": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz.tbi",
-  "GatkVariantCalling.referenceFasta": "/home/user/genomes/human/GRCh38.fasta",
-  "GatkVariantCalling.referenceFastaFai": "/home/user/genomes/human/GRCh38.fasta.fai",
-  "GatkVariantCalling.referenceFastaDict": "/home/user/genomes/human/GRCh38.dict",
-  "GatkVariantCalling.vcfBasename": "s1",
-  "GatkVariantCalling.XNonParRegions": "/home/user/genomes/human/x_non_par.bed",
-  "GatkVariantCalling.YNonParRegions": "/home/user/genomes/human/y_non_par.bed",
-  "GatkVariantCalling.outputDir": "/home/user/analysis/results/",
-  "GatkVariantCalling.bamFilesAndGenders": [
+  "MultisampleCalling.dbsnpVCF": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz",
+  "MultisampleCalling.dbsnpVCFIndex": "/home/user/genomes/human/dbsnp/dbsnp-151.vcf.gz.tbi",
+  "MultisampleCalling.referenceFasta": "/home/user/genomes/human/GRCh38.fasta",
+  "MultisampleCalling.referenceFastaFai": "/home/user/genomes/human/GRCh38.fasta.fai",
+  "MultisampleCalling.referenceFastaDict": "/home/user/genomes/human/GRCh38.dict",
+  "MultisampleCalling.vcfBasename": "s1",
+  "MultisampleCalling.XNonParRegions": "/home/user/genomes/human/x_non_par.bed",
+  "MultisampleCalling.YNonParRegions": "/home/user/genomes/human/y_non_par.bed",
+  "MultisampleCalling.outputDir": "/home/user/analysis/results/",
+  "MultisampleCalling.bamFilesAndGenders": [
     {"file": "/home/user/mapping/results/s1_1.bam",
      "index":  "/home/user/mapping/results/s1_1.bai",
      "gender":"male"},
