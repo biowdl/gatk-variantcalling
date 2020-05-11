@@ -52,7 +52,7 @@ workflow SingleSampleCalling {
     Boolean unknownGender = !(male || female)
 
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
-    Boolean scattered = length(autosomalRegionScatters) == 1 && !knownParRegions
+    Boolean scattered = length(autosomalRegionScatters) > 1 && !knownParRegions
 
     String scatterDir = outputDir + "/" + sampleName + "/scatters/"
     String vcfBasename = outputDir + "/" + sampleName
