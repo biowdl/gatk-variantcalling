@@ -15,6 +15,19 @@ This workflow can be run using
 [Cromwell](http://cromwell.readthedocs.io/en/stable/):
 ```
 java -jar cromwell-<version>.jar run -i inputs.json multisample-variantcalling.wdl
+
+The pipeline can be integrated into other pipelines as well. It has been split
+up into three parts for convenience.
+
++ `calculate-regions.wdl`: Calculates the scatters taking into account 
+  (optional) the non-PAR regions and regions of interest.
++ `single-sample-variantcalling.wdl`: Variant calling using the given scatters
+  and non-PAR regions. If no scattering is used and there are no non-PAR 
+  regions given, this is the same as a plain call to HaplotypeCaller. Can be
+  run in GVCF mode.
++ `jointgenotyping.wdl`. Runs the jointgenotyping (scattered). This step is
+  optional. Requires the single sample pipeline to be run in GVCF mode.
+
 ```
 
 ### Inputs
