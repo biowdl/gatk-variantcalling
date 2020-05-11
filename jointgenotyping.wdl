@@ -110,4 +110,24 @@ workflow JointGenotyping {
         File multisampleVcf = select_first([noScatterVcf, gatherVcfs.outputVcf])
         File multisampleVcfIndex = select_first([noScatterVcfIndex, gatherVcfs.outputVcfIndex])
     }
+
+    parameter_meta {
+        gvcfFiles: {description: "List of GVCF files to merge and genotype jointly.", category: "required"}
+        gvcfFilesIndex: {description: "The indexes for the GVCF files."}
+        vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
+                       category: "common"}
+        referenceFasta: { description: "The reference fasta file", category: "required" }
+        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
+        dbsnpVCF: { description: "dbsnp VCF file used for checking known sites", category: "common"}
+        dbsnpVCFIndex: { description: "Index (.tbi) file for the dbsnp VCF", category: "common"}
+        outputDir: { description: "The directory where the output files should be located", category: "common" }
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be seperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+              category: "advanced"}
+        scatterSizeMillions:{ description: "Same as scatterSize, but is multiplied by 1000000 to get scatterSize. This allows for setting larger values more easily",
+                              category: "advanced"}
+        regions: {description: "A bed file describing the regions to operate on.", category: "common"}
+        dockerImages: { description: "specify which docker images should be used for running this pipeline",
+                        category: "advanced" }
+    }
 }
