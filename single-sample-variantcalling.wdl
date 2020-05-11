@@ -52,7 +52,7 @@ workflow SingleSampleCalling {
     Boolean unknownGender = !(male || female)
 
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
-    Boolean noScatter = length(autosomalRegionScatters) == 1 && !knownParRegions
+    Boolean scattered = length(autosomalRegionScatters) == 1 && !knownParRegions
 
     String scatterDir = outputDir + "/" + sampleName + "/scatters/"
     String vcfBasename = outputDir + "/" + sampleName
@@ -61,7 +61,7 @@ workflow SingleSampleCalling {
         String scatterBasename = scatterDir + "/" + basename(bed)
         call gatk.HaplotypeCaller as callAutosomal {
             input:
-                outputPath = (if noScatter then vcfBasename else scatterBasename) + (if (gvcf) then ".g" else "") + ".vcf.gz",
+                outputPath = (if scattered then scatterBasename else vcfBasename) + (if (gvcf) then ".g" else "") + ".vcf.gz",
                 intervalList = [bed],
                 referenceFasta = referenceFasta,
                 referenceFastaIndex = referenceFastaFai,
@@ -125,7 +125,7 @@ workflow SingleSampleCalling {
     Array[File] VCFIndexes = flatten([callAutosomal.outputVCFIndex, select_all([callX.outputVCFIndex, callY.outputVCFIndex])])
 
 
-    if (mergeVcf && !noScatter && gvcf) {
+    if (mergeVcf && scattered && gvcf) {
         call gatk.CombineGVCFs as mergeSingleSampleGvcf {
             input:
                 gvcfFiles = VCFs,
@@ -137,7 +137,7 @@ workflow SingleSampleCalling {
                 dockerImage = dockerImages["gatk4"]
         }
     }
-    if (mergeVcf && !noScatter && !gvcf) {
+    if (mergeVcf && scattered && !gvcf) {
         call picard.MergeVCFs as mergeSingleSampleVcf {
             input:
                 inputVCFs = VCFs,
@@ -150,15 +150,15 @@ workflow SingleSampleCalling {
     File? mergedVcf = if gvcf then mergeSingleSampleGvcf.outputVcf else mergeSingleSampleVcf.outputVcf
     File? mergedVcfIndex = if gvcf then mergeSingleSampleGvcf.outputVcfIndex else mergeSingleSampleVcf.outputVcfIndex
 
-    if (noScatter) {
+    if (!scattered) {
         File noScatterVcf = callAutosomal.outputVCF[0]
         File noScatterVcfIndex = callAutosomal.outputVCFIndex[0]
     }
 
 
     output {
-        File? outputVcf = if noScatter then noScatterVcf else mergedVcf
-        File? outputVcfIndex = if noScatter then noScatterVcfIndex else mergedVcfIndex
+        File? outputVcf = if scattered then mergedVcf else noScatterVcf
+        File? outputVcfIndex = if scattered then mergedVcfIndex else noScatterVcfIndex
         Array[File] vcfScatters = VCFs
         Array[File] vcfIndexScatters = VCFIndexes
     }
