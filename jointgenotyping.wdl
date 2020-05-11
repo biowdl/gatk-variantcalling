@@ -36,11 +36,7 @@ workflow JointGenotyping {
         File referenceFastaFai
         File? dbsnpVCF
         File? dbsnpVCFIndex
-        File? XNonParRegions
-        File? YNonParRegions
         File? regions
-        Boolean jointgenotyping = true
-        Boolean singleSampleGvcf = false
         # Added scatterSizeMillions to overcome Json max int limit
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
@@ -103,7 +99,7 @@ workflow JointGenotyping {
             input:
                 inputVCFs = genotypeGvcfs.outputVCF,
                 inputVCFsIndexes = genotypeGvcfs.outputVCFIndex,
-                outputVcfPath = outputDir + "/" + vcfBasename + ".vcf.gz",
+                outputVcfPath = vcfName,
                 dockerImage = dockerImages["picard"]
         }
     }
