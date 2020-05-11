@@ -116,7 +116,14 @@ workflow CalculateRegions {
         regions: {description: "A bed file describing the regions to operate on. Will be used to intersect the other regions.", category: "common"}
         XNonParRegions: {description: "Bed file with the non-PAR regions of X", category: "required"}
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "required"}
+        referenceFasta: { description: "The reference fasta file", category: "required" }
         referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }
         dockerImages: { description: "specify which docker images should be used for running this pipeline", category: "advanced" }
+        scatterSize: {description: "The size of the scattered regions in bases. Scattering is used to speed up certain processes. The genome will be seperated into multiple chunks (scatters) which will be processed in their own job, allowing for parallel processing. Higher values will result in a lower number of jobs. The optimal value here will depend on the available resources.",
+              category: "advanced"}
+        scatterSizeMillions:{ description: "Same as scatterSize, but is multiplied by 1000000 to get scatterSize. This allows for setting larger values more easily",
+                              category: "advanced"}
+    
     }
 }
