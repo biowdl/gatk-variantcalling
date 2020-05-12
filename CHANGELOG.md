@@ -8,6 +8,17 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+
+version 3.0.0-dev
+-----------------
++ Refactoring of the pipeline:
+    + Split up the pipeline into a single sample variant calling pipeline and 
+      a part that performs the joint genotyping. This allows for more elegantly
+      integrating the pipeline into other pipelines.
+    + Merge steps are only performed when there is more than one scatter. 
+      This prevents data from being written twice unnecessarily.
+    + `multisample-variantcalling.wdl` is a reference implementation.
+
 version 2.0.0
 -----------------
 + Add a scatterSizeMillions parameter to make it easier to set larger scatter 
