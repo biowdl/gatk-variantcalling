@@ -113,7 +113,7 @@ workflow JointGenotyping {
 
     parameter_meta {
         gvcfFiles: {description: "List of GVCF files to merge and genotype jointly.", category: "required"}
-        gvcfFilesIndex: {description: "The indexes for the GVCF files."}
+        gvcfFilesIndex: {description: "The indexes for the GVCF files.", category: "required"}
         vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
                        category: "common"}
         referenceFasta: { description: "The reference fasta file", category: "required" }

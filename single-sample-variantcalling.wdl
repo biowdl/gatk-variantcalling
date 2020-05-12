@@ -166,7 +166,7 @@ workflow SingleSampleCalling {
     parameter_meta {
         bam: {description: "The bam file", category: "required"}
         bamIndex: {description: "Index of the bam file", category: "required"}
-        gender: {description: "Gender of the sample. Accepted values: female,F,f,male,M,m. Other values default to 'unknown'."}
+        gender: {description: "Gender of the sample. Accepted values: female,F,f,male,M,m. Other values default to 'unknown'.", category: "common"}
         sampleName: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
                        category: "common"}
         referenceFasta: { description: "The reference fasta file", category: "required" }
