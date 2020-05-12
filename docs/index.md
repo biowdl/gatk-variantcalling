@@ -15,6 +15,7 @@ This workflow can be run using
 [Cromwell](http://cromwell.readthedocs.io/en/stable/):
 ```
 java -jar cromwell-<version>.jar run -i inputs.json multisample-variantcalling.wdl
+```
 
 The pipeline can be integrated into other pipelines as well. It has been split
 up into three parts for convenience.
@@ -27,8 +28,6 @@ up into three parts for convenience.
   run in GVCF mode.
 + `jointgenotyping.wdl`. Runs the jointgenotyping (scattered). This step is
   optional. Requires the single sample pipeline to be run in GVCF mode.
-
-```
 
 ### Inputs
 Inputs are provided through a JSON file. The minimally required inputs are
