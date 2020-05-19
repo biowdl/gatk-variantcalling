@@ -1,12 +1,12 @@
 {
-  "GatkVariantCalling.bamFilesAndGenders": [
+  "MultisampleCalling.bamFilesAndGenders": [
     {"file": "tests/data/wgs2.realign.bam",
       "index":  "tests/data/wgs2.realign.bai"}
     ],
-  "GatkVariantCalling.referenceFasta": "tests/data/reference.fasta",
-  "GatkVariantCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
-  "GatkVariantCalling.referenceFastaDict": "tests/data/reference.dict",
-  "GatkVariantCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
-  "GatkVariantCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
-  "GatkVariantCalling.scatterSize": 10000
+  "MultisampleCalling.referenceFasta": "tests/data/reference.fasta",
+  "MultisampleCalling.referenceFastaFai": "tests/data/reference.fasta.fai",
+  "MultisampleCalling.referenceFastaDict": "tests/data/reference.dict",
+  "MultisampleCalling.dbsnpVCF": "tests/data/wgs2.vcf.gz",
+  "MultisampleCalling.dbsnpVCFIndex": "tests/data/wgs2.vcf.gz.tbi",
+  "MultisampleCalling.scatterSize": 10000
 }

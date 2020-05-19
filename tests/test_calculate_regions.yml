@@ -57,3 +57,30 @@
     - path: test-output/intersected_y_non_par_regions.bed
       contains:
         - "Y	5000	8000"
+    - path: test-output/scatters/scatter-0.bed
+
+- name: calculate_regions_only_scatter
+  tags:
+    - integration
+    - regions
+  command: >-
+    cromwell run -o tests/cromwell_options.json
+    -i tests/integration/calculate_regions_only_scatter.json calculate-regions.wdl
+  files:
+    - path: test-output/autosomal_regions.bed
+      should_exist: false
+    - path: test-output/intersected_autosomal_regions.bed
+      should_exist: false
+    - path: test-output/intersected_x_non_par_regions.bed
+      should_exist: false
+    - path: test-output/intersected_y_non_par_regions.bed
+      should_exist: false
+    - path: test-output/scatters/scatter-0.bed
+      contains:
+        - "22\t0\t10000"
+    - path: test-output/scatters/scatter-1.bed
+      contains:
+        - "X\t0\t10000"
+    - path: test-output/scatters/scatter-2.bed
+      contains:
+        - "Y\t0\t10000"
