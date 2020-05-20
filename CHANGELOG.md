@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 3.0.0-dev
 -----------------
++ Tasks were updated to contain the `time_minutes` runtime attribute and
+  associated `timeMinutes` input, describing the maximum time the task will
+  take to run.
 + Refactoring of the pipeline:
     + Split up the pipeline into a single sample variant calling pipeline and 
       a part that performs the joint genotyping. This allows for more elegantly
