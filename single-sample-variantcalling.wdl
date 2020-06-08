@@ -22,6 +22,7 @@ version 1.0
 
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
+import "tasks/bcftools.wdl" as bcftools
 
 workflow SingleSampleCalling {
     input {
@@ -38,6 +39,7 @@ workflow SingleSampleCalling {
         File? XNonParRegions
         File? YNonParRegions
         Array[File]+ autosomalRegionScatters
+        File? statsRegions
         Boolean gvcf = false
         Boolean dontUseSoftClippedBases = false  # Should be true for RNA
         Float? standardMinConfidenceThresholdForCalling  # should be 20.0 for RNA
@@ -148,20 +150,49 @@ workflow SingleSampleCalling {
         }
     }
 
-    File? mergedVcf = if gvcf then mergeSingleSampleGvcf.outputVcf else mergeSingleSampleVcf.outputVcf
-    File? mergedVcfIndex = if gvcf then mergeSingleSampleGvcf.outputVcfIndex else mergeSingleSampleVcf.outputVcfIndex
+    # Block of logic to select the first (only) element of the callAutosomal.outputVCF array if it was the only HaplotypeCaller task performed.
+    File? mergedVcf = if (!scattered && !gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleVcf.outputVcf
+    File? mergedVcfIndex = if (!scattered && !gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleVcf.outputVcfIndex
+    File? mergedGVcf = if (!scattered && gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleGvcf.outputVcf
+    File? mergedGVcfIndex = if (!scattered && gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleGvcf.outputVcfIndex
 
-    if (!scattered) {
-        File noScatterVcf = callAutosomal.outputVCF[0]
-        File noScatterVcfIndex = callAutosomal.outputVCFIndex[0]
+    call gatk.VariantEval as VariantEval {
+        input: 
+            evalVcfs = if mergeVcf then [select_first([mergedVcf, mergedGVcf])] else VCFs,
+            evalVcfsIndex = if mergeVcf then [select_first([mergedVcfIndex, mergedGVcfIndex])] else VCFIndexes,
+            samples = [sampleName],
+            referenceFasta = referenceFasta,
+            referenceFastaFai = referenceFastaFai,
+            referenceFastaDict = referenceFastaDict,
+            dbsnpVCF = dbsnpVCF,
+            dbsnpVCFIndex = dbsnpVCFIndex,
+            intervals = select_all([statsRegions]),
+            outputPath = outputDir + "/variants/" + sampleName + ".vcf.table"
     }
 
+        # Bcftools can not combine the stats for multiple vcfs. So we only call
+        # It when there is a per sample vcf.
+        if (defined(mergedVcf) || defined(mergedGVcf)) {
+            call bcftools.Stats as Stats {
+                input:
+                    inputVcf = select_first([mergedVcf, mergedGVcf]),
+                    inputVcfIndex = select_first([mergedVcfIndex, mergedGVcfIndex]),
+                    outputPath = outputDir + "/variants/" + sampleName + ".vcf.stats",
+                    fastaRef = referenceFasta,
+                    fastaRefIndex = referenceFastaFai,
+                    regionsFile = statsRegions,
+                    samples = [sampleName]
+            }
+        }
 
     output {
-        File? outputVcf = if scattered then mergedVcf else noScatterVcf
-        File? outputVcfIndex = if scattered then mergedVcfIndex else noScatterVcfIndex
+        File? outputVcf = mergedVcf
+        File? outputVcfIndex = mergedVcfIndex
+        File? outputGVcf = mergedGVcf
+        File? outputGVcfIndex = mergedGVcfIndex
         Array[File] vcfScatters = VCFs
         Array[File] vcfIndexScatters = VCFIndexes
+        Array[File] stats = select_all([VariantEval.table, Stats.stats])
     }
 
     parameter_meta {
