@@ -192,7 +192,7 @@ workflow SingleSampleCalling {
         File? outputGVcfIndex = mergedGVcfIndex
         Array[File] vcfScatters = VCFs
         Array[File] vcfIndexScatters = VCFIndexes
-        Array[File] stats = select_all([VariantEval.table, Stats.stats])
+        Array[File] reports = select_all([VariantEval.table, Stats.stats])
     }
 
     parameter_meta {
