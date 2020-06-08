@@ -142,6 +142,7 @@ workflow JointGenotyping {
         gvcfFilesIndex: {description: "The indexes for the GVCF files.", category: "required"}
         vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
                        category: "common"}
+        sampleIds: {description: "Sample IDs which should be analysed by the stats tools.", category: "advanced"}
         referenceFasta: { description: "The reference fasta file", category: "required" }
         referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
         referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }

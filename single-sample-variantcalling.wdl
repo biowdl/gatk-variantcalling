@@ -212,9 +212,8 @@ workflow SingleSampleCalling {
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
-        gvcf: {description: "Whether to call in GVCF mode.",
-                          category: "common"}
-
+        gvcf: {description: "Whether to call in GVCF mode.", category: "common"}
+        statsRegions: {description: "Which regions need to be analysed by the stats tools.", category: "advanced"}
         mergeVcf: {description: "Whether to merge scattered VCFs.", category: "common"}
         dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
         standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
