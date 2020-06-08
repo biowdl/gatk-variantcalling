@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 3.0.0-dev
 -----------------
++ Added  `bcftools stats` and `Gatk VariantEval` tasks to generate stats on
+  called VCF files.
 + Tasks were updated to contain the `time_minutes` runtime attribute and
   associated `timeMinutes` input, describing the maximum time the task will
   take to run.
