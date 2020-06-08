@@ -153,13 +153,13 @@ workflow SingleSampleCalling {
     # Block of logic to select the first (only) element of the callAutosomal.outputVCF array if it was the only HaplotypeCaller task performed.
     File? mergedVcf = if (!scattered && !gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleVcf.outputVcf
     File? mergedVcfIndex = if (!scattered && !gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleVcf.outputVcfIndex
-    File? mergedGVcf = if (!scattered && gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleGvcf.outputVcf
-    File? mergedGVcfIndex = if (!scattered && gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleGvcf.outputVcfIndex
+    File? mergedGvcf = if (!scattered && gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleGvcf.outputVcf
+    File? mergedGvcfIndex = if (!scattered && gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleGvcf.outputVcfIndex
 
     call gatk.VariantEval as VariantEval {
         input: 
-            evalVcfs = if mergeVcf then [select_first([mergedVcf, mergedGVcf])] else VCFs,
-            evalVcfsIndex = if mergeVcf then [select_first([mergedVcfIndex, mergedGVcfIndex])] else VCFIndexes,
+            evalVcfs = if mergeVcf then [select_first([mergedVcf, mergedGvcf])] else VCFs,
+            evalVcfsIndex = if mergeVcf then [select_first([mergedVcfIndex, mergedGvcfIndex])] else VCFIndexes,
             samples = [sampleName],
             referenceFasta = referenceFasta,
             referenceFastaFai = referenceFastaFai,
@@ -172,11 +172,11 @@ workflow SingleSampleCalling {
 
         # Bcftools can not combine the stats for multiple vcfs. So we only call
         # It when there is a per sample vcf.
-        if (defined(mergedVcf) || defined(mergedGVcf)) {
+        if (defined(mergedVcf) || defined(mergedGvcf)) {
             call bcftools.Stats as Stats {
                 input:
-                    inputVcf = select_first([mergedVcf, mergedGVcf]),
-                    inputVcfIndex = select_first([mergedVcfIndex, mergedGVcfIndex]),
+                    inputVcf = select_first([mergedVcf, mergedGvcf]),
+                    inputVcfIndex = select_first([mergedVcfIndex, mergedGvcfIndex]),
                     outputPath = outputDir + "/variants/" + sampleName + ".vcf.stats",
                     fastaRef = referenceFasta,
                     fastaRefIndex = referenceFastaFai,
@@ -188,8 +188,8 @@ workflow SingleSampleCalling {
     output {
         File? outputVcf = mergedVcf
         File? outputVcfIndex = mergedVcfIndex
-        File? outputGVcf = mergedGVcf
-        File? outputGVcfIndex = mergedGVcfIndex
+        File? outputGvcf = mergedGvcf
+        File? outputGvcfIndex = mergedGvcfIndex
         Array[File] vcfScatters = VCFs
         Array[File] vcfIndexScatters = VCFIndexes
         Array[File] reports = select_all([VariantEval.table, Stats.stats])
