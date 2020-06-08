@@ -1,7 +1,7 @@
 {
   "MultisampleCalling.bamFilesAndGenders": [
-    {"file": "tests/data/wgs2.realign.bam",
-     "index":  "tests/data/wgs2.realign.bai"},
+    {"file": "tests/data/wgs2.bam",
+     "index":  "tests/data/wgs2.bai"},
     {"file": "tests/data/wgs3.bam",
      "index":  "tests/data/wgs3.bai"}
   ],
