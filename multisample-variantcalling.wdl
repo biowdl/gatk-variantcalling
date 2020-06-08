@@ -118,6 +118,7 @@ workflow MultisampleCalling {
         File? multisampleGVcfIndex = JointGenotyping.multisampleGVcfIndex
         Array[File] singleSampleVcfs = select_all(singleSampleCalling.outputVcf)
         Array[File] singleSampleVcfsIndex = select_all(singleSampleCalling.outputVcfIndex)
+        Array[File] reports = flatten([select_first([JointGenotyping.reports, []]), flatten(singleSampleCalling.reports)])
     }
 
     parameter_meta {
