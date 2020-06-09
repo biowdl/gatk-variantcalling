@@ -45,7 +45,7 @@ workflow MultisampleCalling {
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = scatterSizeMillions * 1000000
+        Int? scatterSize
         Map[String, String] dockerImages = {
           "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
@@ -62,6 +62,8 @@ workflow MultisampleCalling {
             XNonParRegions = XNonParRegions,
             YNonParRegions = YNonParRegions,
             regions = regions,
+            scatterSizeMillions = scatterSizeMillions,
+            scatterSize = scatterSize,
             dockerImages = dockerImages
     }
 
@@ -103,6 +105,7 @@ workflow MultisampleCalling {
                     referenceFastaFai = referenceFastaFai,
                     referenceFastaDict = referenceFastaDict,
                     scatterSize = scatterSize,
+                    scatterSizeMillions = scatterSizeMillions,
                     dockerImages = dockerImages,
                     dbsnpVCF = dbsnpVCF,
                     dbsnpVCFIndex = dbsnpVCFIndex,
