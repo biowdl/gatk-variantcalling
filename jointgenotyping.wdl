@@ -43,7 +43,7 @@ workflow JointGenotyping {
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = scatterSizeMillions * 1000000
+        Int? scatterSize
         Map[String, String] dockerImages = {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
@@ -67,6 +67,7 @@ workflow JointGenotyping {
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
+            scatterSizeMillions = scatterSizeMillions,
             regions = regions,
             dockerImage = dockerImages["biopet-scatterregions"]
     }

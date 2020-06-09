@@ -33,7 +33,7 @@ workflow CalculateRegions {
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = scatterSizeMillions * 1000000
+        Int? scatterSize
         Map[String, String] dockerImages = {
             "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
             "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
@@ -98,6 +98,7 @@ workflow CalculateRegions {
             referenceFasta = referenceFasta,
             referenceFastaDict = referenceFastaDict,
             scatterSize = scatterSize,
+            scatterSizeMillions = scatterSizeMillions,
             # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
             # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
             # When there are no non-PAR regions, use the optional regions parameter.
