@@ -23,6 +23,7 @@ version 1.0
 import "tasks/biopet/biopet.wdl" as biopet
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
+import "tasks/bcftools.wdl" as bcftools
 
 
 workflow JointGenotyping {
@@ -37,6 +38,7 @@ workflow JointGenotyping {
         File? dbsnpVCF
         File? dbsnpVCFIndex
         File? regions
+        Array[String] sampleIds = []
         # Added scatterSizeMillions to overcome Json max int limit
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
@@ -69,7 +71,7 @@ workflow JointGenotyping {
             dockerImage = dockerImages["biopet-scatterregions"]
     }
     
-    Boolean noScatter = length(scatterRegions.scatters) == 1
+    Boolean scattered = length(scatterRegions.scatters) > 1
     String vcfName = outputDir + "/" + vcfBasename + ".vcf.gz"
 
     scatter (bed in scatterRegions.scatters) {
@@ -82,19 +84,14 @@ workflow JointGenotyping {
                 referenceFasta = referenceFasta,
                 referenceFastaDict = referenceFastaDict,
                 referenceFastaFai = referenceFastaFai,
-                outputPath = if noScatter then vcfName else scatterVcfName,
+                outputPath = if !scattered then vcfName else scatterVcfName,
                 dbsnpVCF = dbsnpVCF,
                 dbsnpVCFIndex = dbsnpVCFIndex,
                 dockerImage = dockerImages["gatk4"]
         }
     }
 
-    if (noScatter) {
-        File noScatterVcf = genotypeGvcfs.outputVCF[0]
-        File noScatterVcfIndex = genotypeGvcfs.outputVCFIndex[0]
-    }
-
-    if (!noScatter) {
+    if (scattered) {
         call picard.MergeVCFs as gatherVcfs {
             input:
                 inputVCFs = genotypeGvcfs.outputVCF,
@@ -104,11 +101,40 @@ workflow JointGenotyping {
         }
     }
 
+    File mergedVcf = select_first([gatherVcfs.outputVcf, genotypeGvcfs.outputVCF[0]])
+    File mergedVcfIndex = select_first([gatherVcfs.outputVcfIndex, genotypeGvcfs.outputVCFIndex[0]])
+
+    call gatk.VariantEval as VariantEval {
+        input: 
+            evalVcfs = [mergedVcf],
+            evalVcfsIndex = [mergedVcfIndex],
+            samples = sampleIds,
+            referenceFasta = referenceFasta,
+            referenceFastaFai = referenceFastaFai,
+            referenceFastaDict = referenceFastaDict,
+            dbsnpVCF = dbsnpVCF,
+            dbsnpVCFIndex = dbsnpVCFIndex,
+            intervals = select_all([regions]),
+            outputPath = outputDir + "/" + vcfBasename + ".vcf.table"
+    }
+
+    call bcftools.Stats as Stats {
+        input:
+            inputVcf = mergedVcf,
+            inputVcfIndex = mergedVcfIndex,
+            outputPath = outputDir + "/" + vcfBasename + ".vcf.stats",
+            fastaRef = referenceFasta,
+            fastaRefIndex = referenceFastaFai,
+            regionsFile = regions,
+            samples = sampleIds
+    }
+
     output {
         File multisampleGVcf = gatherGvcfs.outputVcf
         File multisampleGVcfIndex = gatherGvcfs.outputVcfIndex
-        File multisampleVcf = select_first([noScatterVcf, gatherVcfs.outputVcf])
-        File multisampleVcfIndex = select_first([noScatterVcfIndex, gatherVcfs.outputVcfIndex])
+        File multisampleVcf = mergedVcf
+        File multisampleVcfIndex = mergedVcfIndex
+        Array[File] reports = [VariantEval.table, Stats.stats]
     }
 
     parameter_meta {
@@ -116,6 +142,7 @@ workflow JointGenotyping {
         gvcfFilesIndex: {description: "The indexes for the GVCF files.", category: "required"}
         vcfBasename: { description: "The basename of the VCF and GVCF files that are outputted by the workflow",
                        category: "common"}
+        sampleIds: {description: "Sample IDs which should be analysed by the stats tools.", category: "advanced"}
         referenceFasta: { description: "The reference fasta file", category: "required" }
         referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
         referenceFastaDict: { description: "Sequence dictionary (.dict) file of the reference", category: "required" }

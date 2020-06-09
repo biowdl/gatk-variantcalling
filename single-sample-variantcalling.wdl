@@ -22,6 +22,7 @@ version 1.0
 
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
+import "tasks/bcftools.wdl" as bcftools
 
 workflow SingleSampleCalling {
     input {
@@ -38,6 +39,7 @@ workflow SingleSampleCalling {
         File? XNonParRegions
         File? YNonParRegions
         Array[File]+ autosomalRegionScatters
+        File? statsRegions
         Boolean gvcf = false
         Boolean dontUseSoftClippedBases = false  # Should be true for RNA
         Float? standardMinConfidenceThresholdForCalling  # should be 20.0 for RNA
@@ -52,7 +54,8 @@ workflow SingleSampleCalling {
     Boolean unknownGender = !(male || female)
 
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
-    Boolean scattered = length(autosomalRegionScatters) > 1 && !knownParRegions
+    # We call multiple small VCF files when there are scatters or we have known PAR regions
+    Boolean scattered = length(autosomalRegionScatters) > 1 || knownParRegions
 
     String scatterDir = outputDir + "/" + sampleName + "/scatters/"
     String vcfBasename = outputDir + "/" + sampleName
@@ -147,20 +150,49 @@ workflow SingleSampleCalling {
         }
     }
 
-    File? mergedVcf = if gvcf then mergeSingleSampleGvcf.outputVcf else mergeSingleSampleVcf.outputVcf
-    File? mergedVcfIndex = if gvcf then mergeSingleSampleGvcf.outputVcfIndex else mergeSingleSampleVcf.outputVcfIndex
+    # Block of logic to select the first (only) element of the callAutosomal.outputVCF array if it was the only HaplotypeCaller task performed.
+    File? mergedVcf = if (!scattered && !gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleVcf.outputVcf
+    File? mergedVcfIndex = if (!scattered && !gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleVcf.outputVcfIndex
+    File? mergedGvcf = if (!scattered && gvcf) then callAutosomal.outputVCF[0] else mergeSingleSampleGvcf.outputVcf
+    File? mergedGvcfIndex = if (!scattered && gvcf) then callAutosomal.outputVCFIndex[0] else mergeSingleSampleGvcf.outputVcfIndex
 
-    if (!scattered) {
-        File noScatterVcf = callAutosomal.outputVCF[0]
-        File noScatterVcfIndex = callAutosomal.outputVCFIndex[0]
+    call gatk.VariantEval as VariantEval {
+        input: 
+            evalVcfs = if mergeVcf then [select_first([mergedVcf, mergedGvcf])] else VCFs,
+            evalVcfsIndex = if mergeVcf then [select_first([mergedVcfIndex, mergedGvcfIndex])] else VCFIndexes,
+            samples = [sampleName],
+            referenceFasta = referenceFasta,
+            referenceFastaFai = referenceFastaFai,
+            referenceFastaDict = referenceFastaDict,
+            dbsnpVCF = dbsnpVCF,
+            dbsnpVCFIndex = dbsnpVCFIndex,
+            intervals = select_all([statsRegions]),
+            outputPath = outputDir + "/variants/" + sampleName + ".vcf.table"
     }
 
+        # Bcftools can not combine the stats for multiple vcfs. So we only call
+        # It when there is a per sample vcf.
+        if (defined(mergedVcf) || defined(mergedGvcf)) {
+            call bcftools.Stats as Stats {
+                input:
+                    inputVcf = select_first([mergedVcf, mergedGvcf]),
+                    inputVcfIndex = select_first([mergedVcfIndex, mergedGvcfIndex]),
+                    outputPath = outputDir + "/variants/" + sampleName + ".vcf.stats",
+                    fastaRef = referenceFasta,
+                    fastaRefIndex = referenceFastaFai,
+                    regionsFile = statsRegions,
+                    samples = [sampleName]
+            }
+        }
 
     output {
-        File? outputVcf = if scattered then mergedVcf else noScatterVcf
-        File? outputVcfIndex = if scattered then mergedVcfIndex else noScatterVcfIndex
+        File? outputVcf = mergedVcf
+        File? outputVcfIndex = mergedVcfIndex
+        File? outputGvcf = mergedGvcf
+        File? outputGvcfIndex = mergedGvcfIndex
         Array[File] vcfScatters = VCFs
         Array[File] vcfIndexScatters = VCFIndexes
+        Array[File] reports = select_all([VariantEval.table, Stats.stats])
     }
 
     parameter_meta {
@@ -180,9 +212,8 @@ workflow SingleSampleCalling {
         YNonParRegions: {description: "Bed file with the non-PAR regions of Y", category: "common"}
         dockerImages: { description: "specify which docker images should be used for running this pipeline",
                         category: "advanced" }
-        gvcf: {description: "Whether to call in GVCF mode.",
-                          category: "common"}
-
+        gvcf: {description: "Whether to call in GVCF mode.", category: "common"}
+        statsRegions: {description: "Which regions need to be analysed by the stats tools.", category: "advanced"}
         mergeVcf: {description: "Whether to merge scattered VCFs.", category: "common"}
         dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
         standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
