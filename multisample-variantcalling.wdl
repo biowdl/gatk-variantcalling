@@ -50,7 +50,7 @@ workflow MultisampleCalling {
           "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
-          "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
+          "chunked-scatter": "biowdl/chunked-scatter:latest"
         }
     }
 
