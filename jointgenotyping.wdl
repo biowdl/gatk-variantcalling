@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import "tasks/biopet/biopet.wdl" as biopet
+import "tasks/chunked-scatter.wdl" as chunkedscatter
 import "tasks/gatk.wdl" as gatk
 import "tasks/picard.wdl" as picard
 import "tasks/bcftools.wdl" as bcftools
@@ -43,11 +43,11 @@ workflow JointGenotyping {
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = scatterSizeMillions * 1000000
+        Int? scatterSize
         Map[String, String] dockerImages = {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
-          "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
+          "chunked-scatter": "biowdl/chunked-scatter:latest"
         }
     }
     
@@ -62,13 +62,12 @@ workflow JointGenotyping {
             dockerImage = dockerImages["gatk4"]
     }
 
-    call biopet.ScatterRegions as scatterRegions {
+    call chunkedscatter.ScatterRegions as scatterRegions {
         input:
-            referenceFasta = referenceFasta,
-            referenceFastaDict = referenceFastaDict,
+            inputFile = select_first([regions, referenceFastaFai]),
             scatterSize = scatterSize,
-            regions = regions,
-            dockerImage = dockerImages["biopet-scatterregions"]
+            scatterSizeMillions = scatterSizeMillions,
+            dockerImage = dockerImages["chunked-scatter"]
     }
     
     Boolean scattered = length(scatterRegions.scatters) > 1

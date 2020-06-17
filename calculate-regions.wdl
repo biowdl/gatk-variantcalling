@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import "tasks/bedtools.wdl" as bedtools
-import "tasks/biopet/biopet.wdl" as biopet
+import "tasks/chunked-scatter.wdl" as chunkedscatter
 
 workflow CalculateRegions {
     input {
@@ -33,10 +33,10 @@ workflow CalculateRegions {
         Int scatterSizeMillions = 1000
         # scatterSize is on number of bases. The human genome has 3 000 000 000 bases.
         # 1 billion gives approximately 3 scatters per sample.
-        Int scatterSize = scatterSizeMillions * 1000000
+        Int? scatterSize
         Map[String, String] dockerImages = {
             "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
-            "biopet-scatterregions":"quay.io/biocontainers/biopet-scatterregions:0.2--0",
+            "chunked-scatter": "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
         }
     }
 
@@ -89,20 +89,19 @@ workflow CalculateRegions {
         }
     }
 
+    # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
+    # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
+    # When there are no non-PAR regions, use the optional regions parameter.
     File? calculatedAutosomalRegions = if knownParRegions
                       then select_first([intersectAutosomalRegions.intersectedBed, inverseBed.complementBed])
                       else regions
 
-    call biopet.ScatterRegions as scatterAutosomalRegions {
+    call chunkedscatter.ScatterRegions as scatterAutosomalRegions {
         input:
-            referenceFasta = referenceFasta,
-            referenceFastaDict = referenceFastaDict,
+            inputFile = select_first([calculatedAutosomalRegions, referenceFastaFai]),
             scatterSize = scatterSize,
-            # When there are non-PAR regions and there are regions of interest, use the intersect of the autosomal regions and the regions of interest.
-            # When there are non-PAR regions and there are no specified regions of interest, use the autosomal regions.
-            # When there are no non-PAR regions, use the optional regions parameter.
-            regions = calculatedAutosomalRegions,
-            dockerImage = dockerImages["biopet-scatterregions"]
+            scatterSizeMillions = scatterSizeMillions,
+            dockerImage = dockerImages["chunked-scatter"]
     }
 
     output {
