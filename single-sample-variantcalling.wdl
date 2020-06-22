@@ -52,7 +52,7 @@ workflow SingleSampleCalling {
         Int timeMinutes = ceil(size(bam, "G") * 60)
     }
 
-    Int perJobTime = ceil(timeMinutes / length(autosomalRegionScatters))
+    Int perJobTime = 10 + ceil(timeMinutes / length(autosomalRegionScatters))
     Boolean male = (gender == "male" || gender == "m" || gender == "M")
     Boolean female = (gender == "female" || gender == "f" || gender == "F")
     Boolean unknownGender = !(male || female)
