@@ -48,8 +48,8 @@ workflow SingleSampleCalling {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
         }
-        # Expect roughly 1 hour per gigabyte of BAM file.
-        Int timeMinutes = ceil(size(bam, "G") * 60)
+        # Expect roughly 2 hour per gigabyte of BAM file.
+        Int timeMinutes = ceil(size(bam, "G") * 120)
     }
 
     Int perJobTime = 10 + ceil(timeMinutes / length(autosomalRegionScatters))
