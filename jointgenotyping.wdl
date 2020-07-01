@@ -103,20 +103,6 @@ workflow JointGenotyping {
     File mergedVcf = select_first([gatherVcfs.outputVcf, genotypeGvcfs.outputVCF[0]])
     File mergedVcfIndex = select_first([gatherVcfs.outputVcfIndex, genotypeGvcfs.outputVCFIndex[0]])
 
-    call gatk.VariantEval as VariantEval {
-        input: 
-            evalVcfs = [mergedVcf],
-            evalVcfsIndex = [mergedVcfIndex],
-            samples = sampleIds,
-            referenceFasta = referenceFasta,
-            referenceFastaFai = referenceFastaFai,
-            referenceFastaDict = referenceFastaDict,
-            dbsnpVCF = dbsnpVCF,
-            dbsnpVCFIndex = dbsnpVCFIndex,
-            intervals = select_all([regions]),
-            outputPath = outputDir + "/" + vcfBasename + ".vcf.table"
-    }
-
     call bcftools.Stats as Stats {
         input:
             inputVcf = mergedVcf,
@@ -133,7 +119,7 @@ workflow JointGenotyping {
         File multisampleGVcfIndex = gatherGvcfs.outputVcfIndex
         File multisampleVcf = mergedVcf
         File multisampleVcfIndex = mergedVcfIndex
-        Array[File] reports = [VariantEval.table, Stats.stats]
+        Array[File] reports = [Stats.stats]
     }
 
     parameter_meta {
