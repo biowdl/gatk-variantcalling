@@ -48,7 +48,11 @@ workflow SingleSampleCalling {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
         }
+        # Expect roughly 2 hour per gigabyte of BAM file.
+        Int timeMinutes = ceil(size(bam, "G") * 120)
     }
+
+    Int perJobTime = 10 + ceil(timeMinutes / length(autosomalRegionScatters))
     Boolean male = (gender == "male" || gender == "m" || gender == "M")
     Boolean female = (gender == "female" || gender == "f" || gender == "F")
     Boolean unknownGender = !(male || female)
@@ -76,6 +80,7 @@ workflow SingleSampleCalling {
                 dontUseSoftClippedBases = dontUseSoftClippedBases,
                 standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                 gvcf = gvcf,
+                timeMinutes = perJobTime, 
                 dockerImage = dockerImages["gatk4"]
         }
     }
@@ -99,6 +104,7 @@ workflow SingleSampleCalling {
                 dontUseSoftClippedBases = dontUseSoftClippedBases,
                 standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
                 gvcf = gvcf,
+                timeMinutes = perJobTime,
                 dockerImage = dockerImages["gatk4"]
         }
 
@@ -119,7 +125,8 @@ workflow SingleSampleCalling {
                     gvcf = gvcf,
                     dontUseSoftClippedBases = dontUseSoftClippedBases,
                     standardMinConfidenceThresholdForCalling = standardMinConfidenceThresholdForCalling,
-                    dockerImage = dockerImages["gatk4"]
+                    dockerImage = dockerImages["gatk4"],
+                    timeMinutes = perJobTime
             }
         }
     }
@@ -204,5 +211,6 @@ workflow SingleSampleCalling {
         mergeVcf: {description: "Whether to merge scattered VCFs.", category: "common"}
         dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
         standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
+        timeMinutes: {description: "The time in minutes expected for each haplotype caller task. Will be exposed as the time_minutes runtime attribute.", category: "advanced"}
     }
 }
