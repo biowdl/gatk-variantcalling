@@ -211,5 +211,6 @@ workflow SingleSampleCalling {
         mergeVcf: {description: "Whether to merge scattered VCFs.", category: "common"}
         dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
         standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
+        timeMinutes: {description: "The time in minutes expected for each haplotype caller task. Will be exposed as the time_minutes runtime attribute.", category: "advanced"}
     }
 }
