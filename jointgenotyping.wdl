@@ -50,6 +50,7 @@ workflow JointGenotyping {
           "chunked-scatter": "biowdl/chunked-scatter:latest"
         }
     }
+    meta {allowNestedInputs: true}
     
     call gatk.CombineGVCFs as gatherGvcfs {
         input:

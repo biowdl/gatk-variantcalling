@@ -39,6 +39,7 @@ workflow CalculateRegions {
             "chunked-scatter": "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
         }
     }
+    meta {allowNestedInputs: true}
 
     Boolean knownParRegions = defined(XNonParRegions) && defined(YNonParRegions)
 

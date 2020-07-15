@@ -53,6 +53,7 @@ workflow MultisampleCalling {
           "chunked-scatter": "biowdl/chunked-scatter:latest"
         }
     }
+    meta {allowNestedInputs: true}
 
     call calc.CalculateRegions as calculateRegions {
         input:

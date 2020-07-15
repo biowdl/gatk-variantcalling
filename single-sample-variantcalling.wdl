@@ -51,6 +51,7 @@ workflow SingleSampleCalling {
         # Expect roughly 2 hour per gigabyte of BAM file.
         Int timeMinutes = ceil(size(bam, "G") * 120)
     }
+    meta {allowNestedInputs: true}
 
     Int perJobTime = 10 + ceil(timeMinutes / length(autosomalRegionScatters))
     Boolean male = (gender == "male" || gender == "m" || gender == "M")
