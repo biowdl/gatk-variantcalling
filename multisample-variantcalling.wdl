@@ -50,7 +50,8 @@ workflow MultisampleCalling {
           "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
           "picard":"quay.io/biocontainers/picard:2.23.2--0",
           "gatk4": "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0",
-          "chunked-scatter": "quay.io/biocontainers/chunked-scatter:1.0.0--py_0"
+          "chunked-scatter": "quay.io/biocontainers/chunked-scatter:1.0.0--py_0",
+          "bcftools": "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
         }
     }
     meta {allowNestedInputs: true}
