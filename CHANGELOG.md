@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 3.0.0-dev
 -----------------
++ Updated default images.
 + Estimate the time needed for each scatter by checking the size of the input
   BAM file.
 + Use [scatter-regions](https://github.com/biowdl/chunked-scatter) to replace
