@@ -45,8 +45,8 @@ workflow SingleSampleCalling {
         Float? standardMinConfidenceThresholdForCalling  # should be 20.0 for RNA
         Boolean mergeVcf = true
         Map[String, String] dockerImages = {
-          "picard":"quay.io/biocontainers/picard:2.20.5--0",
-          "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
+          "picard":"quay.io/biocontainers/picard:2.23.2--0",
+          "gatk4": "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0",
         }
         # Expect roughly 2 hour per gigabyte of BAM file.
         Int timeMinutes = ceil(size(bam, "G") * 120)
