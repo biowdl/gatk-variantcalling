@@ -47,7 +47,8 @@ workflow JointGenotyping {
         Map[String, String] dockerImages = {
           "picard":"quay.io/biocontainers/picard:2.20.5--0",
           "gatk4":"quay.io/biocontainers/gatk4:4.1.0.0--0",
-          "chunked-scatter": "biowdl/chunked-scatter:latest"
+          "chunked-scatter": "biowdl/chunked-scatter:latest",
+          "bcftools": "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
         }
     }
     meta {allowNestedInputs: true}
@@ -112,7 +113,8 @@ workflow JointGenotyping {
             fastaRef = referenceFasta,
             fastaRefIndex = referenceFastaFai,
             regionsFile = regions,
-            samples = sampleIds
+            samples = sampleIds,
+            dockerImage = dockerImages["bcftools"]
     }
 
     output {

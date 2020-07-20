@@ -36,7 +36,7 @@ workflow CalculateRegions {
         Int? scatterSize
         Map[String, String] dockerImages = {
             "bedtools": "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3",
-            "chunked-scatter": "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
+            "chunked-scatter": "quay.io/biocontainers/chunked-scatter:1.0.0--py_0"
         }
     }
     meta {allowNestedInputs: true}
