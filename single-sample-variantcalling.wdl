@@ -49,8 +49,8 @@ workflow SingleSampleCalling {
           "gatk4": "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0",
           "bcftools": "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
         }
-        # Expect roughly 2 hour per gigabyte of BAM file.
-        Int timeMinutes = ceil(size(bam, "G") * 120)
+        # Expect roughly 3 hours per gigabyte of BAM file.
+        Int timeMinutes = ceil(size(bam, "G") * 200)
     }
     meta {allowNestedInputs: true}
 
