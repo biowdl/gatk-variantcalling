@@ -58,7 +58,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.pedigree"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.pedigree">MultisampleCalling.JointGenotyping.genotypeGvcfs.pedigree</a></dt>
 <dd>
     <i>File? </i><br />
-    Pedigree file for determining the population "founders"
+    Pedigree file for determining the population "founders".
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.regions"><a href="#MultisampleCalling.JointGenotyping.regions">MultisampleCalling.JointGenotyping.regions</a></dt>
 <dd>
@@ -93,7 +93,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callAutosomal.pedigree"><a href="#MultisampleCalling.singleSampleCalling.callAutosomal.pedigree">MultisampleCalling.singleSampleCalling.callAutosomal.pedigree</a></dt>
 <dd>
     <i>File? </i><br />
-    Pedigree file for determining the population "founders"
+    Pedigree file for determining the population "founders".
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.callAutosomal.ploidy"><a href="#MultisampleCalling.singleSampleCalling.callAutosomal.ploidy">MultisampleCalling.singleSampleCalling.callAutosomal.ploidy</a></dt>
 <dd>
@@ -108,7 +108,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callX.pedigree"><a href="#MultisampleCalling.singleSampleCalling.callX.pedigree">MultisampleCalling.singleSampleCalling.callX.pedigree</a></dt>
 <dd>
     <i>File? </i><br />
-    Pedigree file for determining the population "founders"
+    Pedigree file for determining the population "founders".
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.callY.excludeIntervalList"><a href="#MultisampleCalling.singleSampleCalling.callY.excludeIntervalList">MultisampleCalling.singleSampleCalling.callY.excludeIntervalList</a></dt>
 <dd>
@@ -118,7 +118,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callY.pedigree"><a href="#MultisampleCalling.singleSampleCalling.callY.pedigree">MultisampleCalling.singleSampleCalling.callY.pedigree</a></dt>
 <dd>
     <i>File? </i><br />
-    Pedigree file for determining the population "founders"
+    Pedigree file for determining the population "founders".
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.Stats.compareVcf"><a href="#MultisampleCalling.singleSampleCalling.Stats.compareVcf">MultisampleCalling.singleSampleCalling.Stats.compareVcf</a></dt>
 <dd>
@@ -259,7 +259,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.compressionLevel"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.compressionLevel">MultisampleCalling.JointGenotyping.gatherVcfs.compressionLevel</a></dt>
 <dd>
     <i>Int </i><i>&mdash; Default:</i> <code>1</code><br />
-    The compression level at which the BAM files are written
+    The compression level at which the BAM files are written.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.javaXmx"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.javaXmx">MultisampleCalling.JointGenotyping.gatherVcfs.javaXmx</a></dt>
 <dd>
@@ -289,7 +289,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups">MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups</a></dt>
 <dd>
     <i>Array[String] </i><i>&mdash; Default:</i> <code>["StandardAnnotation"]</code><br />
-    Which annotation groups will be used for the annotation
+    Which annotation groups will be used for the annotation.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.javaXmx"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.javaXmx">MultisampleCalling.JointGenotyping.genotypeGvcfs.javaXmx</a></dt>
 <dd>
@@ -441,7 +441,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callAutosomal.emitRefConfidence"><a href="#MultisampleCalling.singleSampleCalling.callAutosomal.emitRefConfidence">MultisampleCalling.singleSampleCalling.callAutosomal.emitRefConfidence</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
-    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.callAutosomal.javaXmxMb"><a href="#MultisampleCalling.singleSampleCalling.callAutosomal.javaXmxMb">MultisampleCalling.singleSampleCalling.callAutosomal.javaXmxMb</a></dt>
 <dd>
@@ -466,7 +466,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callX.emitRefConfidence"><a href="#MultisampleCalling.singleSampleCalling.callX.emitRefConfidence">MultisampleCalling.singleSampleCalling.callX.emitRefConfidence</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
-    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.callX.javaXmxMb"><a href="#MultisampleCalling.singleSampleCalling.callX.javaXmxMb">MultisampleCalling.singleSampleCalling.callX.javaXmxMb</a></dt>
 <dd>
@@ -491,7 +491,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.callY.emitRefConfidence"><a href="#MultisampleCalling.singleSampleCalling.callY.emitRefConfidence">MultisampleCalling.singleSampleCalling.callY.emitRefConfidence</a></dt>
 <dd>
     <i>String </i><i>&mdash; Default:</i> <code>if gvcf then "GVCF" else "NONE"</code><br />
-    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'
+    Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.callY.javaXmxMb"><a href="#MultisampleCalling.singleSampleCalling.callY.javaXmxMb">MultisampleCalling.singleSampleCalling.callY.javaXmxMb</a></dt>
 <dd>
@@ -531,7 +531,7 @@ MultisampleCalling.
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.compressionLevel"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.compressionLevel">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.compressionLevel</a></dt>
 <dd>
     <i>Int </i><i>&mdash; Default:</i> <code>1</code><br />
-    The compression level at which the BAM files are written
+    The compression level at which the BAM files are written.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.javaXmx"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.javaXmx">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.javaXmx</a></dt>
 <dd>
