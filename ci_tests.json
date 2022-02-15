@@ -1,0 +1,7 @@
+[
+  "single_sample",
+  "two_sample",
+  "two_sample_gender_aware",
+  "two_sample_gender_aware_with_regions",
+  "rna_sample"
+]
