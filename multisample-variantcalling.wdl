@@ -153,6 +153,18 @@ workflow MultisampleCalling {
         singleSampleGvcf: {description: "Whether to output single-sample gvcfs", category: "common"}
         dontUseSoftClippedBases: {description: "Whether soft-clipped bases should be excluded from the haplotype caller analysis (should be set to 'true' for RNA).", category: "common"}
         standardMinConfidenceThresholdForCalling: {description: "Minimum confidence treshold used by haplotype caller.", category: "advanced"}
+    
+        # outputs
+        multisampleVcf: {description: "Multisample VCF file created by GATK JointGenotyping."}
+        multisampleVcfIndex: {description: "Multisample VCF index."}
+        multisampleGVcf: {description: "GVCF created by GATK CombineGVCFs."}
+        multisampleGVcfIndex: {description: "Multisample GVCF index."}
+        singleSampleVcfs: {description: "Individually called VCFs."}
+        singleSampleVcfsIndex: {description: "Indexes for the individually called VCFs."}
+        singleSampleGvcfs: {description: "Individually called GVCFs."}
+        singleSampleGvcfsIndex: {description: "Indexes for the individually called VCFs."}
+        reports: {description: "Reports are given out by the used GATK tools."}
+    
     }
 }
 

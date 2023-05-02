@@ -13,7 +13,7 @@ MultisampleCalling.
 <dl>
 <dt id="MultisampleCalling.bamFilesAndGenders"><a href="#MultisampleCalling.bamFilesAndGenders">MultisampleCalling.bamFilesAndGenders</a></dt>
 <dd>
-    <i>Array[struct(file : File, gender : String?, index : File)] </i><br />
+    <i>Array[BamAndGender] </i><br />
     List of structs containing,BAM file, BAM index and gender. The BAM should be recalibrated beforehand if required. The gender string is optional. Actionable values are 'female','f','F','male','m' and 'M'.
 </dd>
 <dt id="MultisampleCalling.referenceFasta"><a href="#MultisampleCalling.referenceFasta">MultisampleCalling.referenceFasta</a></dt>
@@ -158,37 +158,37 @@ MultisampleCalling.
 <dl>
 <dt id="MultisampleCalling.calculateRegions.intersectAutosomalRegions.memory"><a href="#MultisampleCalling.calculateRegions.intersectAutosomalRegions.memory">MultisampleCalling.calculateRegions.intersectAutosomalRegions.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"M"))}M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"MiB"))}MiB"</code><br />
     The amount of memory needed for the job.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.intersectAutosomalRegions.timeMinutes"><a href="#MultisampleCalling.calculateRegions.intersectAutosomalRegions.timeMinutes">MultisampleCalling.calculateRegions.intersectAutosomalRegions.timeMinutes</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"G"))</code><br />
+    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"GiB"))</code><br />
     The maximum amount of time the job will run in minutes.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.intersectX.memory"><a href="#MultisampleCalling.calculateRegions.intersectX.memory">MultisampleCalling.calculateRegions.intersectX.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"M"))}M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"MiB"))}MiB"</code><br />
     The amount of memory needed for the job.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.intersectX.timeMinutes"><a href="#MultisampleCalling.calculateRegions.intersectX.timeMinutes">MultisampleCalling.calculateRegions.intersectX.timeMinutes</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"G"))</code><br />
+    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"GiB"))</code><br />
     The maximum amount of time the job will run in minutes.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.intersectY.memory"><a href="#MultisampleCalling.calculateRegions.intersectY.memory">MultisampleCalling.calculateRegions.intersectY.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"M"))}M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([regionsA, regionsB],"MiB"))}MiB"</code><br />
     The amount of memory needed for the job.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.intersectY.timeMinutes"><a href="#MultisampleCalling.calculateRegions.intersectY.timeMinutes">MultisampleCalling.calculateRegions.intersectY.timeMinutes</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"G"))</code><br />
+    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size([regionsA, regionsB],"GiB"))</code><br />
     The maximum amount of time the job will run in minutes.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.inverseBed.memory"><a href="#MultisampleCalling.calculateRegions.inverseBed.memory">MultisampleCalling.calculateRegions.inverseBed.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([inputBed, faidx],"M"))}M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size([inputBed, faidx],"MiB"))}MiB"</code><br />
     The amount of memory needed for the job.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.inverseBed.timeMinutes"><a href="#MultisampleCalling.calculateRegions.inverseBed.timeMinutes">MultisampleCalling.calculateRegions.inverseBed.timeMinutes</a></dt>
@@ -198,7 +198,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.mergeBeds.memory"><a href="#MultisampleCalling.calculateRegions.mergeBeds.memory">MultisampleCalling.calculateRegions.mergeBeds.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size(bedFiles,"M"))}M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"~{512 + ceil(size(bedFiles,"MiB"))}MiB"</code><br />
     The amount of memory needed for the job.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.mergeBeds.outputBed"><a href="#MultisampleCalling.calculateRegions.mergeBeds.outputBed">MultisampleCalling.calculateRegions.mergeBeds.outputBed</a></dt>
@@ -213,7 +213,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.scatterAutosomalRegions.memory"><a href="#MultisampleCalling.calculateRegions.scatterAutosomalRegions.memory">MultisampleCalling.calculateRegions.scatterAutosomalRegions.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"256M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"256MiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.calculateRegions.scatterAutosomalRegions.prefix"><a href="#MultisampleCalling.calculateRegions.scatterAutosomalRegions.prefix">MultisampleCalling.calculateRegions.scatterAutosomalRegions.prefix</a></dt>
@@ -248,7 +248,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherGvcfs.memory"><a href="#MultisampleCalling.JointGenotyping.gatherGvcfs.memory">MultisampleCalling.JointGenotyping.gatherGvcfs.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"5G"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"5GiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherGvcfs.timeMinutes"><a href="#MultisampleCalling.JointGenotyping.gatherGvcfs.timeMinutes">MultisampleCalling.JointGenotyping.gatherGvcfs.timeMinutes</a></dt>
@@ -268,12 +268,12 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.memory"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.memory">MultisampleCalling.JointGenotyping.gatherVcfs.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"5G"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"5GiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.timeMinutes"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.timeMinutes">MultisampleCalling.JointGenotyping.gatherVcfs.timeMinutes</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size(inputVCFs,"G")) * 2</code><br />
+    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size(inputVCFs,"GiB")) * 2</code><br />
     The maximum amount of time the job will run in minutes.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.useJdkDeflater"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.useJdkDeflater">MultisampleCalling.JointGenotyping.gatherVcfs.useJdkDeflater</a></dt>
@@ -283,7 +283,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.gatherVcfs.useJdkInflater"><a href="#MultisampleCalling.JointGenotyping.gatherVcfs.useJdkInflater">MultisampleCalling.JointGenotyping.gatherVcfs.useJdkInflater</a></dt>
 <dd>
-    <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
+    <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
     True, uses the java inflater. False, uses the optimized intel inflater.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups">MultisampleCalling.JointGenotyping.genotypeGvcfs.annotationGroups</a></dt>
@@ -298,7 +298,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.memory"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.memory">MultisampleCalling.JointGenotyping.genotypeGvcfs.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"7G"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"7GiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.genotypeGvcfs.timeMinutes"><a href="#MultisampleCalling.JointGenotyping.genotypeGvcfs.timeMinutes">MultisampleCalling.JointGenotyping.genotypeGvcfs.timeMinutes</a></dt>
@@ -313,7 +313,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.scatterRegions.memory"><a href="#MultisampleCalling.JointGenotyping.scatterRegions.memory">MultisampleCalling.JointGenotyping.scatterRegions.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"256M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"256MiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.scatterRegions.prefix"><a href="#MultisampleCalling.JointGenotyping.scatterRegions.prefix">MultisampleCalling.JointGenotyping.scatterRegions.prefix</a></dt>
@@ -375,7 +375,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.Stats.memory"><a href="#MultisampleCalling.JointGenotyping.Stats.memory">MultisampleCalling.JointGenotyping.Stats.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"256M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"256MiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.JointGenotyping.Stats.regions"><a href="#MultisampleCalling.JointGenotyping.Stats.regions">MultisampleCalling.JointGenotyping.Stats.regions</a></dt>
@@ -520,7 +520,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.memory"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.memory">MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"5G"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"5GiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.timeMinutes"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.timeMinutes">MultisampleCalling.singleSampleCalling.mergeSingleSampleGvcf.timeMinutes</a></dt>
@@ -540,12 +540,12 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.memory"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.memory">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"5G"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"5GiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.timeMinutes"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.timeMinutes">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.timeMinutes</a></dt>
 <dd>
-    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size(inputVCFs,"G")) * 2</code><br />
+    <i>Int </i><i>&mdash; Default:</i> <code>1 + ceil(size(inputVCFs,"GiB")) * 2</code><br />
     The maximum amount of time the job will run in minutes.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkDeflater"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkDeflater">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkDeflater</a></dt>
@@ -555,7 +555,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkInflater"><a href="#MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkInflater">MultisampleCalling.singleSampleCalling.mergeSingleSampleVcf.useJdkInflater</a></dt>
 <dd>
-    <i>Boolean </i><i>&mdash; Default:</i> <code>true</code><br />
+    <i>Boolean </i><i>&mdash; Default:</i> <code>false</code><br />
     True, uses the java inflater. False, uses the optimized intel inflater.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.Stats.afBins"><a href="#MultisampleCalling.singleSampleCalling.Stats.afBins">MultisampleCalling.singleSampleCalling.Stats.afBins</a></dt>
@@ -602,7 +602,7 @@ MultisampleCalling.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.Stats.memory"><a href="#MultisampleCalling.singleSampleCalling.Stats.memory">MultisampleCalling.singleSampleCalling.Stats.memory</a></dt>
 <dd>
-    <i>String </i><i>&mdash; Default:</i> <code>"256M"</code><br />
+    <i>String </i><i>&mdash; Default:</i> <code>"256MiB"</code><br />
     The amount of memory this job will use.
 </dd>
 <dt id="MultisampleCalling.singleSampleCalling.Stats.regions"><a href="#MultisampleCalling.singleSampleCalling.Stats.regions">MultisampleCalling.singleSampleCalling.Stats.regions</a></dt>
